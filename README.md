@@ -1,5 +1,6 @@
 # Zone Rush
 
+
 Zone Rush is a lightweight HTML5 Canvas survival arena game built with vanilla JavaScript and browser-native ES modules.
 
 ## Run
