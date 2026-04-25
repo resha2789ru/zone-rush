@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -18,31 +18,31 @@
     <div id="hud" class="panel hidden">
       <div class="hud-row">
         <div class="stat">
-          <span class="label">HP</span>
+          <span class="label">Здоровье</span>
           <div class="hp-wrap">
             <div id="hpBar" class="hp-bar"></div>
           </div>
           <span id="hpText" class="value">100</span>
         </div>
         <div class="stat">
-          <span class="label">Players Left</span>
+          <span class="label">Игроков осталось</span>
           <span id="playersLeft" class="value">0</span>
         </div>
         <div class="stat">
-          <span class="label">Time</span>
+          <span class="label">Время</span>
           <span id="timer" class="value">00:00</span>
         </div>
         <div class="stat">
-          <span class="label">Dash</span>
-          <span id="dash" class="value">Ready</span>
+          <span class="label">Рывок</span>
+          <span id="dash" class="value">Готов</span>
         </div>
         <div class="stat">
-          <span class="label">Shoot</span>
-          <span id="shoot" class="value">Ready</span>
+          <span class="label">Выстрел</span>
+          <span id="shoot" class="value">Готов</span>
         </div>
         <div class="stat">
-          <span class="label">Rocket</span>
-          <span id="rocket" class="value">Ready</span>
+          <span class="label">Ракета</span>
+          <span id="rocket" class="value">Готова</span>
           <div class="cd-wrap">
             <div id="rocketCdBar" class="cd-bar"></div>
           </div>
@@ -52,48 +52,48 @@
 
     <div id="menu" class="overlay visible">
       <h1>Zone Rush</h1>
-      <p class="subtitle">Fast neon survival arena. Stay inside the safe zone and outlast everyone.</p>
+      <p class="subtitle">Быстрая неоновая арена на выживание. Оставайся в безопасной зоне и переживи всех соперников.</p>
       <div class="menu-profile">
-        <label class="menu-input-label" for="nicknameInput">Nickname</label>
-        <input id="nicknameInput" class="menu-input" type="text" maxlength="24" value="Guest" />
+        <label class="menu-input-label" for="nicknameInput">Никнейм</label>
+        <input id="nicknameInput" class="menu-input" type="text" maxlength="24" value="Гость" />
         <div class="menu-profile-row">
-          <span class="menu-profile-item">Player ID: <strong id="menuPlayerId">guest</strong></span>
-          <span class="menu-profile-item">Best: <strong id="menuBestScore">0</strong></span>
+          <span class="menu-profile-item">ID игрока: <strong id="menuPlayerId">guest</strong></span>
+          <span class="menu-profile-item">Рекорд: <strong id="menuBestScore">0</strong></span>
         </div>
       </div>
       <div class="controls">
-        <p><strong>Move:</strong> WASD or Arrow Keys</p>
-        <p><strong>Dash:</strong> Space (cooldown)</p>
-        <p><strong>Shoot:</strong> Left Mouse Button or F</p>
-        <p><strong>Rocket:</strong> Right Mouse Button</p>
-        <p><strong>Mobile:</strong> Left joystick + right action buttons</p>
+        <p><strong>Движение:</strong> WASD или стрелки</p>
+        <p><strong>Рывок:</strong> Space (перезарядка)</p>
+        <p><strong>Выстрел:</strong> левая кнопка мыши или F</p>
+        <p><strong>Ракета:</strong> правая кнопка мыши</p>
+        <p><strong>Мобильное:</strong> левый джойстик + кнопки действий справа</p>
       </div>
       <div class="leaderboard-panel">
-        <h3>Top 10</h3>
-        <p id="menuLeaderboardStatus" class="leaderboard-status">Loading leaderboard...</p>
+        <h3>Топ 10</h3>
+        <p id="menuLeaderboardStatus" class="leaderboard-status">Загрузка рейтинга...</p>
         <div id="menuLeaderboard" class="leaderboard-wrap"></div>
       </div>
-      <button id="playBtn" class="action-btn">Play</button>
+      <button id="playBtn" class="action-btn">Играть</button>
     </div>
 
     <div id="result" class="overlay hidden">
-      <h2 id="resultTitle">Match Over</h2>
-      <p id="resultText">You lasted 00:00</p>
+      <h2 id="resultTitle">Матч окончен</h2>
+      <p id="resultText">Ты продержался 00:00</p>
       <div class="result-meta">
-        <p id="resultScore" class="result-statline">Score: 0</p>
-        <p id="resultBest" class="result-statline">Best: 0</p>
-        <p id="resultSaveStatus" class="result-statline">Saved locally</p>
+        <p id="resultScore" class="result-statline">Очки: 0</p>
+        <p id="resultBest" class="result-statline">Рекорд: 0</p>
+        <p id="resultSaveStatus" class="result-statline">Сохранено локально</p>
       </div>
       <div class="result-panel">
-        <h3>Match Statistics</h3>
+        <h3>Статистика матча</h3>
         <div id="resultStatsTable" class="stats-table-wrap"></div>
       </div>
       <div class="leaderboard-panel leaderboard-panel-result">
-        <h3>Leaderboard</h3>
-        <p id="resultLeaderboardStatus" class="leaderboard-status">Loading leaderboard...</p>
+        <h3>Рейтинг</h3>
+        <p id="resultLeaderboardStatus" class="leaderboard-status">Загрузка рейтинга...</p>
         <div id="resultLeaderboard" class="leaderboard-wrap"></div>
       </div>
-      <button id="playAgainBtn" class="action-btn">Play Again</button>
+      <button id="playAgainBtn" class="action-btn">Играть снова</button>
     </div>
 
     <div id="mobileControls" class="mobile-controls hidden">
@@ -101,9 +101,9 @@
         <div id="joystickKnob" class="joystick-knob"></div>
       </div>
       <div class="mobile-actions">
-        <button id="dashBtn" class="mobile-btn mobile-btn-dash" type="button">Dash</button>
-        <button id="shootBtn" class="mobile-btn mobile-btn-shoot" type="button">Fire</button>
-        <button id="rocketBtn" class="mobile-btn mobile-btn-rocket" type="button">Rocket</button>
+        <button id="dashBtn" class="mobile-btn mobile-btn-dash" type="button">Рывок</button>
+        <button id="shootBtn" class="mobile-btn mobile-btn-shoot" type="button">Огонь</button>
+        <button id="rocketBtn" class="mobile-btn mobile-btn-rocket" type="button">Ракета</button>
       </div>
     </div>
   </div>
