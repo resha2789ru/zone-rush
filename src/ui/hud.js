@@ -1,6 +1,7 @@
 import { BALANCE_CONFIG } from '../config/balanceConfig.js';
 import { GAME_CONFIG } from '../config/gameConfig.js';
 import { clamp } from '../utils/math.js';
+import { UI_TEXT } from './localization.js';
 
 // ==================================================
 // HUD UI
@@ -29,26 +30,26 @@ export function updateHud(game) {
   game.dom.timerText.textContent = formatTime(Math.min(game.elapsed, GAME_CONFIG.matchDuration));
 
   if (game.player.dashCooldown <= 0) {
-    game.dom.dashText.textContent = 'Ready';
+    game.dom.dashText.textContent = UI_TEXT.ready;
     game.dom.dashText.style.color = '#76ffbe';
   } else {
-    game.dom.dashText.textContent = `${game.player.dashCooldown.toFixed(1)}s`;
+    game.dom.dashText.textContent = `${game.player.dashCooldown.toFixed(1)}с`;
     game.dom.dashText.style.color = '#ffd56e';
   }
 
   if (game.player.shootCooldown <= 0) {
-    game.dom.shootText.textContent = 'Ready';
+    game.dom.shootText.textContent = UI_TEXT.ready;
     game.dom.shootText.style.color = '#7ef5ff';
   } else {
-    game.dom.shootText.textContent = `${game.player.shootCooldown.toFixed(1)}s`;
+    game.dom.shootText.textContent = `${game.player.shootCooldown.toFixed(1)}с`;
     game.dom.shootText.style.color = '#ffd56e';
   }
 
   if (game.player.rocketCooldown <= 0) {
-    game.dom.rocketText.textContent = 'Ready';
+    game.dom.rocketText.textContent = UI_TEXT.readyFemale;
     game.dom.rocketText.style.color = '#ffa86c';
   } else {
-    game.dom.rocketText.textContent = `${game.player.rocketCooldown.toFixed(1)}s`;
+    game.dom.rocketText.textContent = `${game.player.rocketCooldown.toFixed(1)}с`;
     game.dom.rocketText.style.color = '#ffd56e';
   }
 
