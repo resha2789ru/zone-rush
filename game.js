@@ -65,8 +65,8 @@
 
   const TRAP_COUNT = 6;
   const TRAP_RADIUS = 28;
-  const MIN_USER_ZOOM = 0.45;
-  const MAX_USER_ZOOM = 2.4;
+  const MIN_USER_ZOOM = 0.08;
+  const MAX_USER_ZOOM = 3.4;
 
   const keys = Object.create(null);
   const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
@@ -444,6 +444,14 @@
         event.preventDefault();
       });
 
+      app.addEventListener('selectstart', (event) => {
+        event.preventDefault();
+      });
+
+      app.addEventListener('dragstart', (event) => {
+        event.preventDefault();
+      });
+
       canvas.addEventListener('pointerdown', (event) => {
         if (!isTouchDevice || event.pointerType !== 'touch') return;
         this.handleCanvasTouchPointer(event);
@@ -603,7 +611,9 @@
 
     applyCameraZoom() {
       this.userZoom = clamp(this.userZoom, MIN_USER_ZOOM, MAX_USER_ZOOM);
-      this.camera.zoom = this.baseZoom * this.userZoom;
+      const minCameraZoom = Math.min(canvas.width / WORLD_SIZE, canvas.height / WORLD_SIZE) * 0.98;
+      const targetZoom = this.baseZoom * this.userZoom;
+      this.camera.zoom = clamp(targetZoom, minCameraZoom, MAX_USER_ZOOM);
     }
 
     updateViewportInsets() {
