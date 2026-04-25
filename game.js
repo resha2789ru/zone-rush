@@ -5,6 +5,12 @@
   const hud = document.getElementById('hud');
   const menu = document.getElementById('menu');
   const result = document.getElementById('result');
+  const mobileControls = document.getElementById('mobileControls');
+  const joystick = document.getElementById('joystick');
+  const joystickKnob = document.getElementById('joystickKnob');
+  const dashBtn = document.getElementById('dashBtn');
+  const shootBtn = document.getElementById('shootBtn');
+  const rocketBtn = document.getElementById('rocketBtn');
 
   const playBtn = document.getElementById('playBtn');
   const playAgainBtn = document.getElementById('playAgainBtn');
@@ -60,6 +66,7 @@
   const TRAP_RADIUS = 28;
 
   const keys = Object.create(null);
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const rand = (min, max) => Math.random() * (max - min) + min;
@@ -272,6 +279,7 @@
 
       this.camera = { x: 0, y: 0 };
       this.mouse = { x: canvas.width * 0.5, y: canvas.height * 0.5, active: false };
+      this.touchMove = { active: false, x: 0, y: 0, pointerId: null };
       this.elapsed = 0;
       this.lastTime = 0;
       this.dashQueued = false;
@@ -283,6 +291,7 @@
       this.lastSurvived = 0;
 
       this.bindEvents();
+      this.updateResponsiveUi();
       this.loop = this.loop.bind(this);
       requestAnimationFrame(this.loop);
     }
@@ -332,8 +341,83 @@
         event.preventDefault();
       });
 
+      joystick.addEventListener('pointerdown', (event) => {
+        if (!isTouchDevice) return;
+        event.preventDefault();
+        this.touchMove.pointerId = event.pointerId;
+        this.touchMove.active = true;
+        joystick.setPointerCapture(event.pointerId);
+        this.updateJoystickFromEvent(event);
+      });
+
+      joystick.addEventListener('pointermove', (event) => {
+        if (!isTouchDevice || !this.touchMove.active || event.pointerId !== this.touchMove.pointerId) return;
+        event.preventDefault();
+        this.updateJoystickFromEvent(event);
+      });
+
+      joystick.addEventListener('pointerup', (event) => {
+        if (!isTouchDevice || event.pointerId !== this.touchMove.pointerId) return;
+        this.resetJoystick();
+      });
+
+      joystick.addEventListener('pointercancel', (event) => {
+        if (!isTouchDevice || event.pointerId !== this.touchMove.pointerId) return;
+        this.resetJoystick();
+      });
+
+      dashBtn.addEventListener('pointerdown', (event) => {
+        if (!isTouchDevice) return;
+        event.preventDefault();
+        this.dashQueued = true;
+      });
+
+      shootBtn.addEventListener('pointerdown', (event) => {
+        if (!isTouchDevice) return;
+        event.preventDefault();
+        this.shootQueued = true;
+      });
+
+      rocketBtn.addEventListener('pointerdown', (event) => {
+        if (!isTouchDevice) return;
+        event.preventDefault();
+        this.rocketQueued = true;
+      });
+
+      window.addEventListener('resize', () => this.updateResponsiveUi());
+
       playBtn.addEventListener('click', () => this.start());
       playAgainBtn.addEventListener('click', () => this.start());
+    }
+
+    updateResponsiveUi() {
+      mobileControls.classList.toggle('active', isTouchDevice);
+    }
+
+    updateJoystickFromEvent(event) {
+      const rect = joystick.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      let dx = event.clientX - centerX;
+      let dy = event.clientY - centerY;
+      const maxRadius = rect.width * 0.32;
+      const dist = Math.hypot(dx, dy);
+      if (dist > maxRadius) {
+        dx = (dx / dist) * maxRadius;
+        dy = (dy / dist) * maxRadius;
+      }
+
+      this.touchMove.x = dx / maxRadius;
+      this.touchMove.y = dy / maxRadius;
+      joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    }
+
+    resetJoystick() {
+      this.touchMove.active = false;
+      this.touchMove.pointerId = null;
+      this.touchMove.x = 0;
+      this.touchMove.y = 0;
+      joystickKnob.style.transform = 'translate(-50%, -50%)';
     }
 
     start() {
@@ -355,6 +439,7 @@
       this.mouseDown = false;
       this.rocketQueued = false;
       this.rightMouseDown = false;
+      this.resetJoystick();
 
       this.safeZone = new SafeZone(center, center);
 
@@ -435,8 +520,8 @@
       const left = keys.a || keys.arrowleft;
       const right = keys.d || keys.arrowright;
 
-      let dirX = 0;
-      let dirY = 0;
+      let dirX = this.touchMove.active ? this.touchMove.x : 0;
+      let dirY = this.touchMove.active ? this.touchMove.y : 0;
 
       if (up) dirY -= 1;
       if (down) dirY += 1;
@@ -461,6 +546,19 @@
         if (aimLen > 10) {
           player.lastDirX = aimX / aimLen;
           player.lastDirY = aimY / aimLen;
+        }
+      }
+
+      if (isTouchDevice) {
+        const target = this.findNearestBot(player.x, player.y);
+        if (target) {
+          const aimX = target.x - player.x;
+          const aimY = target.y - player.y;
+          const aimLen = Math.hypot(aimX, aimY);
+          if (aimLen > 0) {
+            player.lastDirX = aimX / aimLen;
+            player.lastDirY = aimY / aimLen;
+          }
         }
       }
 
@@ -494,6 +592,20 @@
       if (player.dashTimer > 0) {
         this.spawnDashParticles(player.x, player.y, -player.lastDirX, -player.lastDirY, '#5ce9ff', 2);
       }
+    }
+
+    findNearestBot(x, y) {
+      let nearest = null;
+      let bestDist = Infinity;
+      for (const bot of this.bots) {
+        if (!bot.alive) continue;
+        const dist = Math.hypot(bot.x - x, bot.y - y);
+        if (dist < bestDist) {
+          bestDist = dist;
+          nearest = bot;
+        }
+      }
+      return nearest;
     }
 
     shootProjectile(player) {

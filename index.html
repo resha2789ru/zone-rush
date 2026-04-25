@@ -53,6 +53,7 @@
         <p><strong>Dash:</strong> Space (cooldown)</p>
         <p><strong>Shoot:</strong> Left Mouse Button or F</p>
         <p><strong>Rocket:</strong> Right Mouse Button</p>
+        <p><strong>Mobile:</strong> Left joystick + right action buttons</p>
       </div>
       <button id="playBtn" class="action-btn">Play</button>
     </div>
@@ -61,6 +62,17 @@
       <h2 id="resultTitle">Match Over</h2>
       <p id="resultText">You lasted 00:00</p>
       <button id="playAgainBtn" class="action-btn">Play Again</button>
+    </div>
+
+    <div id="mobileControls" class="mobile-controls hidden">
+      <div id="joystick" class="joystick">
+        <div id="joystickKnob" class="joystick-knob"></div>
+      </div>
+      <div class="mobile-actions">
+        <button id="dashBtn" class="mobile-btn mobile-btn-dash" type="button">Dash</button>
+        <button id="shootBtn" class="mobile-btn mobile-btn-shoot" type="button">Fire</button>
+        <button id="rocketBtn" class="mobile-btn mobile-btn-rocket" type="button">Rocket</button>
+      </div>
     </div>
   </div>
 

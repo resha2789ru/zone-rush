@@ -15,6 +15,7 @@ No server setup is required for the MVP.
 - Dash: `Space` (with cooldown)
 - Shoot: `Left Mouse Button` or `F`
 - Rocket: `Right Mouse Button`
+- Mobile: left joystick + on-screen `Dash`, `Fire`, `Rocket` buttons
 
 ## Implemented in MVP
 
@@ -24,6 +25,7 @@ No server setup is required for the MVP.
 - Player shooting with projectile hits on bots
 - Rocket attack with jet trail and explosion splash damage
 - Rocket cooldown indicator in HUD (text + progress bar)
+- Mobile-friendly touch controls and fullscreen layout on phones
 - Shrinking circular safe zone
 - Out-of-zone health damage
 - 8+ AI bots that move and try to stay safe
