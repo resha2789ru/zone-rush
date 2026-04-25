@@ -24,6 +24,7 @@ import { rand } from '../utils/random.js';
 import { showHud, updateHud } from '../ui/hud.js';
 import { showMenu } from '../ui/menu.js';
 import { renderLeaderboard } from '../ui/leaderboard.js';
+import { UI_TEXT, localizeLeaderboardStatus, localizeSaveStatus } from '../ui/localization.js';
 import { showMobileControls } from '../ui/mobileControls.js';
 import { updateMenuProfile } from '../ui/menu.js';
 import { showResult, updateResultScreen } from '../ui/resultScreen.js';
@@ -113,7 +114,7 @@ export class Game {
       }
       const bot = new Bot(bx, by);
       bot.playerId = `bot_${index + 1}`;
-      bot.nickname = `Bot ${index + 1}`;
+      bot.nickname = `${UI_TEXT.bot} ${index + 1}`;
       this.bots.push(bot);
     }
 
@@ -140,7 +141,7 @@ export class Game {
     this.uiState.resultPlayerSummary = payload.playerSummary;
     this.uiState.resultStatsRows = payload.resultRows;
     this.uiState.bestScore = Math.max(this.uiState.bestScore || 0, payload.playerSummary.score || 0);
-    this.uiState.saveStatusText = this.saveAdapter.mode === 'supabase' ? 'Saving online...' : 'Saved locally';
+    this.uiState.saveStatusText = this.saveAdapter.mode === 'supabase' ? UI_TEXT.savingOnline : UI_TEXT.savedLocally;
     showHud(this.dom, false);
     showResult(this.dom, true);
     updateResultScreen(this, win, reason);
@@ -322,29 +323,31 @@ export class Game {
   renderMenuProfile() {
     updateMenuProfile(this.dom, this.playerProfile);
     if (this.dom.menuLeaderboardStatus && !this.uiState.leaderboardStatus) {
-      this.dom.menuLeaderboardStatus.textContent = 'Top 10 leaderboard';
+      this.dom.menuLeaderboardStatus.textContent = UI_TEXT.top10Leaderboard;
     }
   }
 
   renderLeaderboardPanels() {
     if (this.dom.menuLeaderboardStatus) {
-      this.dom.menuLeaderboardStatus.textContent =
-        this.uiState.leaderboardStatus || 'Top 10 leaderboard';
+      this.dom.menuLeaderboardStatus.textContent = localizeLeaderboardStatus(
+        this.uiState.leaderboardStatus || UI_TEXT.top10Leaderboard
+      );
     }
     if (this.dom.resultLeaderboardStatus) {
-      this.dom.resultLeaderboardStatus.textContent =
-        this.uiState.leaderboardStatus || 'Top 10 leaderboard';
+      this.dom.resultLeaderboardStatus.textContent = localizeLeaderboardStatus(
+        this.uiState.leaderboardStatus || UI_TEXT.top10Leaderboard
+      );
     }
 
     renderLeaderboard(
       this.dom.menuLeaderboard,
       this.uiState.menuLeaderboard,
-      this.uiState.leaderboardStatus || 'Leaderboard unavailable'
+      this.uiState.leaderboardStatus || UI_TEXT.leaderboardUnavailable
     );
     renderLeaderboard(
       this.dom.resultLeaderboard,
       this.uiState.resultLeaderboard,
-      this.uiState.leaderboardStatus || 'Leaderboard unavailable'
+      this.uiState.leaderboardStatus || UI_TEXT.leaderboardUnavailable
     );
   }
 
@@ -359,13 +362,13 @@ export class Game {
     const result = await this.saveAdapter.saveMatch(payload);
     this.playerProfile = result.profile || this.saveAdapter.getProfile();
     this.uiState.bestScore = this.playerProfile.bestScore || this.uiState.bestScore;
-    this.uiState.saveStatusText = result.statusText || 'Saved locally';
+    this.uiState.saveStatusText = localizeSaveStatus(result.statusText || UI_TEXT.savedLocally);
     this.uiState.resultLeaderboard = result.leaderboard || this.uiState.resultLeaderboard;
     this.uiState.menuLeaderboard = result.leaderboard || this.uiState.menuLeaderboard;
     this.uiState.leaderboardStatus =
       result.mode === 'supabase'
-        ? ((result.leaderboard || []).length > 0 ? '' : 'Leaderboard unavailable')
-        : 'Showing local leaderboard';
+        ? ((result.leaderboard || []).length > 0 ? '' : UI_TEXT.leaderboardUnavailable)
+        : UI_TEXT.showingLocalLeaderboard;
     this.renderMenuProfile();
     this.renderLeaderboardPanels();
     updateResultScreen(this, win, reason);
