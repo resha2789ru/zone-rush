@@ -5,6 +5,7 @@ import {
   generateGuestPlayerId,
   normalizeNickname,
 } from './playerProfile.js';
+import { UI_TEXT } from '../ui/localization.js';
 
 // ==================================================
 // LOCAL STORAGE SAVE ADAPTER
@@ -55,7 +56,7 @@ export function createLocalSaveAdapter() {
   }
 
   function getNickname() {
-    return normalizeNickname(readStorage(PLAYER_PROFILE_KEYS.nickname, 'Guest') || 'Guest');
+    return normalizeNickname(readStorage(PLAYER_PROFILE_KEYS.nickname, UI_TEXT.guest) || UI_TEXT.guest);
   }
 
   function setNickname(nickname) {
@@ -158,7 +159,7 @@ export function createLocalSaveAdapter() {
     return {
       ok: true,
       mode: 'local',
-      statusText: 'Saved locally',
+      statusText: UI_TEXT.savedLocally,
       profile: nextProfile,
       leaderboard: getLeaderboard(),
       latestMatch: payload,
