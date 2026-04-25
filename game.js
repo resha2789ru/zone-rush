@@ -1,4 +1,5 @@
 ﻿(() => {
+  const app = document.getElementById('app');
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
@@ -291,6 +292,7 @@
       this.lastSurvived = 0;
 
       this.bindEvents();
+      this.resizeCanvas();
       this.updateResponsiveUi();
       this.loop = this.loop.bind(this);
       requestAnimationFrame(this.loop);
@@ -384,7 +386,10 @@
         this.rocketQueued = true;
       });
 
-      window.addEventListener('resize', () => this.updateResponsiveUi());
+      window.addEventListener('resize', () => {
+        this.resizeCanvas();
+        this.updateResponsiveUi();
+      });
 
       playBtn.addEventListener('click', () => this.start());
       playAgainBtn.addEventListener('click', () => this.start());
@@ -392,6 +397,19 @@
 
     updateResponsiveUi() {
       mobileControls.classList.toggle('active', isTouchDevice);
+    }
+
+    resizeCanvas() {
+      const rect = app.getBoundingClientRect();
+      const nextWidth = Math.max(320, Math.round(rect.width));
+      const nextHeight = Math.max(180, Math.round(rect.height));
+
+      if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+        canvas.width = nextWidth;
+        canvas.height = nextHeight;
+        this.mouse.x = canvas.width * 0.5;
+        this.mouse.y = canvas.height * 0.5;
+      }
     }
 
     updateJoystickFromEvent(event) {
