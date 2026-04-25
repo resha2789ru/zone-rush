@@ -254,7 +254,7 @@ body {
   background: linear-gradient(180deg, rgba(255, 164, 87, 0.45), rgba(10, 17, 30, 0.92));
 }
 
-@media (max-width: 860px) {
+@media (max-width: 860px), (hover: none) and (pointer: coarse) {
   .hud-row {
     grid-template-columns: 1fr 1fr 1fr;
   }
