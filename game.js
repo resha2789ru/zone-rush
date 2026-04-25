@@ -278,7 +278,7 @@
       this.rockets = [];
       this.explosions = [];
 
-      this.camera = { x: 0, y: 0 };
+      this.camera = { x: 0, y: 0, zoom: 1 };
       this.mouse = { x: canvas.width * 0.5, y: canvas.height * 0.5, active: false };
       this.touchMove = { active: false, x: 0, y: 0, pointerId: null };
       this.elapsed = 0;
@@ -397,6 +397,7 @@
 
     updateResponsiveUi() {
       mobileControls.classList.toggle('active', isTouchDevice);
+      this.camera.zoom = isTouchDevice && canvas.height > canvas.width ? 1.4 : 1;
     }
 
     resizeCanvas() {
@@ -556,8 +557,8 @@
       }
 
       if (this.mouse.active) {
-        const worldMouseX = this.mouse.x + this.camera.x;
-        const worldMouseY = this.mouse.y + this.camera.y;
+        const worldMouseX = this.mouse.x / this.camera.zoom + this.camera.x;
+        const worldMouseY = this.mouse.y / this.camera.zoom + this.camera.y;
         const aimX = worldMouseX - player.x;
         const aimY = worldMouseY - player.y;
         const aimLen = Math.hypot(aimX, aimY);
@@ -840,10 +841,12 @@
 
     updateCamera() {
       if (!this.player) return;
-      const halfW = canvas.width / 2;
-      const halfH = canvas.height / 2;
-      this.camera.x = clamp(this.player.x - halfW, 0, WORLD_SIZE - canvas.width);
-      this.camera.y = clamp(this.player.y - halfH, 0, WORLD_SIZE - canvas.height);
+      const viewWidth = canvas.width / this.camera.zoom;
+      const viewHeight = canvas.height / this.camera.zoom;
+      const halfW = viewWidth / 2;
+      const halfH = viewHeight / 2;
+      this.camera.x = clamp(this.player.x - halfW, 0, Math.max(0, WORLD_SIZE - viewWidth));
+      this.camera.y = clamp(this.player.y - halfH, 0, Math.max(0, WORLD_SIZE - viewHeight));
     }
 
     updateHud() {
@@ -923,12 +926,14 @@
     }
 
     drawBackground() {
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      const viewWidth = canvas.width / this.camera.zoom;
+      const viewHeight = canvas.height / this.camera.zoom;
+      const grad = ctx.createLinearGradient(0, 0, viewWidth, viewHeight);
       grad.addColorStop(0, '#090f24');
       grad.addColorStop(0.5, '#0b1734');
       grad.addColorStop(1, '#080c1a');
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
 
       const gridSize = 70;
       const startX = -((this.camera.x % gridSize) + gridSize);
@@ -938,17 +943,17 @@
       ctx.strokeStyle = 'rgba(78, 246, 255, 0.08)';
       ctx.lineWidth = 1;
 
-      for (let x = startX; x < canvas.width + gridSize; x += gridSize) {
+      for (let x = startX; x < viewWidth + gridSize; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
+        ctx.lineTo(x, viewHeight);
         ctx.stroke();
       }
 
-      for (let y = startY; y < canvas.height + gridSize; y += gridSize) {
+      for (let y = startY; y < viewHeight + gridSize; y += gridSize) {
         ctx.beginPath();
         ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
+        ctx.lineTo(viewWidth, y);
         ctx.stroke();
       }
       ctx.restore();
@@ -965,6 +970,8 @@
     }
 
     drawDangerZone() {
+      const viewWidth = canvas.width / this.camera.zoom;
+      const viewHeight = canvas.height / this.camera.zoom;
       const sx = this.safeZone.centerX - this.camera.x;
       const sy = this.safeZone.centerY - this.camera.y;
       const pulse = 0.08 + 0.05 * Math.sin(performance.now() / 260);
@@ -972,7 +979,7 @@
       ctx.save();
       ctx.fillStyle = `rgba(255, 45, 98, ${0.14 + pulse})`;
       ctx.beginPath();
-      ctx.rect(0, 0, canvas.width, canvas.height);
+      ctx.rect(0, 0, viewWidth, viewHeight);
       ctx.arc(sx, sy, this.safeZone.radius, 0, Math.PI * 2, true);
       ctx.fill('evenodd');
 
@@ -1017,6 +1024,7 @@
       const bodyColor = isPlayer ? '#6df3ff' : '#ff7acb';
       const armorColor = isPlayer ? '#163a56' : '#5a2553';
       const glowColor = isPlayer ? '#67f4ff' : '#ff77cf';
+      const renderRadius = entity.radius * (isTouchDevice ? 1.45 : 1.18);
 
       ctx.save();
       ctx.translate(sx, sy);
@@ -1026,46 +1034,52 @@
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.36)';
       ctx.beginPath();
-      ctx.ellipse(0, entity.radius * 0.72, entity.radius * 0.78, entity.radius * 0.48, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, renderRadius * 0.8, renderRadius * 0.9, renderRadius * 0.56, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = armorColor;
       ctx.beginPath();
-      ctx.ellipse(0, entity.radius * 0.08, entity.radius * 0.72, entity.radius * 0.9, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, renderRadius * 0.12, renderRadius * 0.82, renderRadius * 1.02, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = bodyColor;
       ctx.beginPath();
-      ctx.ellipse(0, entity.radius * 0.04, entity.radius * 0.54, entity.radius * 0.7, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, renderRadius * 0.1, renderRadius * 0.56, renderRadius * 0.76, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = armorColor;
       ctx.beginPath();
-      ctx.arc(-entity.radius * 0.45, -entity.radius * 0.02, entity.radius * 0.18, 0, Math.PI * 2);
-      ctx.arc(entity.radius * 0.45, -entity.radius * 0.02, entity.radius * 0.18, 0, Math.PI * 2);
+      ctx.arc(-renderRadius * 0.55, renderRadius * 0.02, renderRadius * 0.22, 0, Math.PI * 2);
+      ctx.arc(renderRadius * 0.55, renderRadius * 0.02, renderRadius * 0.22, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#ffd7b5';
       ctx.beginPath();
-      ctx.arc(0, -entity.radius * 0.78, entity.radius * 0.36, 0, Math.PI * 2);
+      ctx.arc(0, -renderRadius * 0.76, renderRadius * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.strokeStyle = '#e8f8ff';
-      ctx.lineWidth = 2.8;
+      ctx.strokeStyle = '#f5fbff';
+      ctx.lineWidth = isTouchDevice ? 3.8 : 3;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(0, -entity.radius * 0.1);
-      ctx.lineTo(0, -entity.radius * 1.2);
+      ctx.moveTo(0, -renderRadius * 0.04);
+      ctx.lineTo(0, -renderRadius * 1.28);
       ctx.stroke();
 
       if (isPlayer) {
         ctx.strokeStyle = '#9efcff';
-        ctx.lineWidth = 3.2;
+        ctx.lineWidth = isTouchDevice ? 4.2 : 3.4;
         ctx.beginPath();
-        ctx.moveTo(0, -entity.radius * 1.2);
-        ctx.lineTo(0, -entity.radius * 1.52);
+        ctx.moveTo(0, -renderRadius * 1.28);
+        ctx.lineTo(0, -renderRadius * 1.62);
         ctx.stroke();
       }
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(0, 0, renderRadius * 0.92, 0, Math.PI * 2);
+      ctx.stroke();
 
       ctx.restore();
 
@@ -1074,7 +1088,7 @@
         const barW = 28;
         const barH = 5;
         const barX = sx - barW * 0.5;
-        const barY = sy - entity.radius - 16;
+        const barY = sy - renderRadius - 16;
 
         ctx.save();
         ctx.fillStyle = 'rgba(4, 10, 24, 0.85)';
@@ -1132,6 +1146,9 @@
     }
 
     drawMatch() {
+      ctx.save();
+      ctx.scale(this.camera.zoom, this.camera.zoom);
+
       this.drawBackground();
       this.drawMapBounds();
 
@@ -1146,6 +1163,7 @@
       for (const explosion of this.explosions) explosion.draw(ctx, this.camera);
 
       for (const p of this.particles) p.draw(ctx, this.camera);
+      ctx.restore();
     }
 
     drawMenuBackground() {
