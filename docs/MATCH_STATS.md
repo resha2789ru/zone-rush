@@ -23,7 +23,7 @@ Tracked values include:
 
 ## Score Formula
 
-Score is calculated in [scoreSystem.js](/C:/dev/ZoneRush/zone-rush/src/systems/scoreSystem.js):
+Score is calculated in `src/systems/scoreSystem.js`:
 
 ```text
 score = survived_seconds * 10 + kills * 100 + damage_dealt + win_bonus

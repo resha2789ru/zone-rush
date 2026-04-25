@@ -20,31 +20,47 @@ function readJson(key, fallbackValue) {
   }
 }
 
-function writeJson(key, value) {
+function readStorage(key, fallbackValue = null) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    const value = localStorage.getItem(key);
+    return value ?? fallbackValue;
+  } catch (error) {
+    console.warn(`Failed to read localStorage key ${key}.`, error);
+    return fallbackValue;
+  }
+}
+
+function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
   } catch (error) {
     console.warn(`Failed to write localStorage key ${key}.`, error);
+    return false;
   }
+}
+
+function writeJson(key, value) {
+  writeStorage(key, JSON.stringify(value));
 }
 
 export function createLocalSaveAdapter() {
   function ensurePlayerId() {
-    let playerId = localStorage.getItem(PLAYER_PROFILE_KEYS.guestId);
+    let playerId = readStorage(PLAYER_PROFILE_KEYS.guestId, null);
     if (!playerId) {
       playerId = generateGuestPlayerId();
-      localStorage.setItem(PLAYER_PROFILE_KEYS.guestId, playerId);
+      writeStorage(PLAYER_PROFILE_KEYS.guestId, playerId);
     }
     return playerId;
   }
 
   function getNickname() {
-    return normalizeNickname(localStorage.getItem(PLAYER_PROFILE_KEYS.nickname) || 'Guest');
+    return normalizeNickname(readStorage(PLAYER_PROFILE_KEYS.nickname, 'Guest') || 'Guest');
   }
 
   function setNickname(nickname) {
     const safeNickname = normalizeNickname(nickname);
-    localStorage.setItem(PLAYER_PROFILE_KEYS.nickname, safeNickname);
+    writeStorage(PLAYER_PROFILE_KEYS.nickname, safeNickname);
 
     const profile = getProfile();
     const nextProfile = { ...profile, nickname: safeNickname, updatedAt: new Date().toISOString() };
@@ -72,12 +88,12 @@ export function createLocalSaveAdapter() {
   }
 
   function getBestScore() {
-    return Math.max(0, Number(localStorage.getItem(PLAYER_PROFILE_KEYS.bestScore) || 0));
+    return Math.max(0, Number(readStorage(PLAYER_PROFILE_KEYS.bestScore, 0) || 0));
   }
 
   function setBestScore(bestScore) {
     const safeBestScore = Math.max(0, Math.round(bestScore || 0));
-    localStorage.setItem(PLAYER_PROFILE_KEYS.bestScore, String(safeBestScore));
+    writeStorage(PLAYER_PROFILE_KEYS.bestScore, String(safeBestScore));
 
     const profile = getProfile();
     const nextProfile = {
@@ -130,7 +146,7 @@ export function createLocalSaveAdapter() {
 
     writeJson(PLAYER_PROFILE_KEYS.latestMatch, payload);
     writeJson(PLAYER_PROFILE_KEYS.profileStats, nextProfile);
-    localStorage.setItem(
+    writeStorage(
       PLAYER_PROFILE_KEYS.bestScore,
       String(Math.max(nextProfile.bestScore || 0, playerSummary.score || 0))
     );

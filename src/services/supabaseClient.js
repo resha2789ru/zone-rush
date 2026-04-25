@@ -5,12 +5,16 @@ import { SUPABASE_CONFIG } from '../config/supabaseConfig.js';
 // ==================================================
 
 function hasValidConfig() {
+  const key = SUPABASE_CONFIG.publishableKey;
+  const hasSupportedPublicKey =
+    typeof key === 'string' &&
+    (key.startsWith('sb_publishable_') || key.startsWith('eyJ'));
+
   return (
     SUPABASE_CONFIG.enabled &&
     typeof SUPABASE_CONFIG.url === 'string' &&
     SUPABASE_CONFIG.url.startsWith('https://') &&
-    typeof SUPABASE_CONFIG.publishableKey === 'string' &&
-    SUPABASE_CONFIG.publishableKey.startsWith('sb_')
+    hasSupportedPublicKey
   );
 }
 

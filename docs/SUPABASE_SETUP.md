@@ -6,7 +6,7 @@
 
 ## Which Key To Use
 
-- Use only the Supabase publishable / anon public key in [src/config/supabaseConfig.js](/C:/dev/ZoneRush/zone-rush/src/config/supabaseConfig.js).
+- Use only the Supabase publishable / anon public key in `src/config/supabaseConfig.js`.
 
 ## Which Keys Not To Use
 
@@ -49,7 +49,7 @@ Opening that URL without an API key may show an API key error. That is normal. T
 
 ## How To Disable Supabase
 
-Edit [src/config/supabaseConfig.js](/C:/dev/ZoneRush/zone-rush/src/config/supabaseConfig.js) and set:
+Edit `src/config/supabaseConfig.js` and set:
 
 ```js
 enabled: false
