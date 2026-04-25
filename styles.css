@@ -16,6 +16,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  min-height: 100dvh;
   background: radial-gradient(circle at 30% 20%, #15224a 0%, #090f22 40%, #03050e 100%);
   color: var(--text-main);
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
@@ -49,7 +50,7 @@ body {
 
 .panel {
   position: absolute;
-  top: 14px;
+  top: calc(14px + env(safe-area-inset-top, 0px));
   left: 14px;
   right: 14px;
   z-index: 5;
@@ -187,7 +188,7 @@ body {
 
 .mobile-controls {
   position: absolute;
-  inset: auto 16px 16px 16px;
+  inset: auto 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
   z-index: 7;
   display: none;
   align-items: flex-end;
@@ -278,18 +279,24 @@ body {
   #app {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     aspect-ratio: auto;
     border-radius: 0;
     border: none;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .panel {
-    top: 10px;
+    top: calc(10px + env(safe-area-inset-top, 0px));
     left: 10px;
     right: 10px;
   }
 
   .mobile-controls {
     display: flex;
+  }
+
+  .mobile-actions {
+    padding-bottom: 4px;
   }
 }
