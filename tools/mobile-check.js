@@ -91,6 +91,10 @@ function assertMetrics(metrics) {
   return issues;
 }
 
+function getPlayButton(page) {
+  return page.getByRole('button', { name: /^(Play|Играть)$/u });
+}
+
 async function runScenario(browser, scenario) {
   const context = await browser.newContext({
     ...devices[scenario.device],
@@ -109,7 +113,7 @@ async function runScenario(browser, scenario) {
     await page.goto(BASE_URL, { waitUntil: 'networkidle' });
     await page.screenshot({ path: path.join(scenarioDir, 'menu.png') });
 
-    await page.getByRole('button', { name: 'Play' }).tap();
+    await getPlayButton(page).tap();
     await page.waitForTimeout(1200);
 
     const before = await collectMetrics(page);
@@ -171,7 +175,7 @@ async function runCpuThrottleProbe(browser) {
   try {
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
     await page.goto(BASE_URL, { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: 'Play' }).tap();
+    await getPlayButton(page).tap();
     await page.waitForTimeout(1500);
     summary.metrics = await collectMetrics(page);
     summary.issues.push(...assertMetrics(summary.metrics));

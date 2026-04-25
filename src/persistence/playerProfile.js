@@ -13,14 +13,15 @@ export const PLAYER_PROFILE_KEYS = {
 
 export function normalizeNickname(value) {
   const trimmed = String(value || '').trim().replace(/\s+/g, ' ');
-  return trimmed.slice(0, 24) || 'Guest';
+  if (trimmed === 'Guest') return 'Гость';
+  return trimmed.slice(0, 24) || 'Гость';
 }
 
 export function generateGuestPlayerId() {
   return `guest_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function createDefaultProfile(playerId, nickname = 'Guest') {
+export function createDefaultProfile(playerId, nickname = 'Гость') {
   return {
     playerId,
     nickname: normalizeNickname(nickname),

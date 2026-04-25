@@ -12,6 +12,7 @@ export const UI_TEXT = {
   leaderboardUnavailable: 'Рейтинг недоступен',
   top10Leaderboard: 'Топ 10 рейтинга',
   showingLocalLeaderboard: 'Показан локальный рейтинг',
+  loadingLeaderboard: 'Загрузка рейтинга...',
   savedOnline: 'Сохранено онлайн',
   savedLocally: 'Сохранено локально',
   savingOnline: 'Сохранение онлайн...',
@@ -32,6 +33,9 @@ export const UI_TEXT = {
   player: 'Игрок',
   damage: 'Урон',
   result: 'Результат',
+  victoryMessage: 'Ты пережил всех соперников за {time}.',
+  timeoutMessage: 'Матч закончился на {time}. Попробуй уничтожить всех ботов быстрее.',
+  defeatMessage: 'Ты продержался {time}.',
 };
 
 export const RESULT_REASON_LABELS = {
@@ -49,13 +53,20 @@ export const RESULT_REASON_LABELS = {
   unknown: 'Неизвестно',
 };
 
+export function formatUiText(template, values = {}) {
+  return Object.entries(values).reduce(
+    (result, [key, value]) => result.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
+
 export function localizeResultReason(reason) {
   return RESULT_REASON_LABELS[reason] || reason || '-';
 }
 
 export function localizeNickname(nickname) {
-  if (!nickname || nickname === 'Guest') return UI_TEXT.guest;
-  return nickname.replace(/^Bot (\d+)$/u, `${UI_TEXT.bot} $1`);
+  if (!nickname || nickname === 'Guest' || nickname === UI_TEXT.guest) return UI_TEXT.guest;
+  return String(nickname).replace(/^Bot (\d+)$/u, `${UI_TEXT.bot} $1`);
 }
 
 export function localizeSaveStatus(statusText) {
@@ -74,7 +85,7 @@ export function localizeLeaderboardStatus(statusText) {
     'Leaderboard unavailable': UI_TEXT.leaderboardUnavailable,
     'Top 10 leaderboard': UI_TEXT.top10Leaderboard,
     'Showing local leaderboard': UI_TEXT.showingLocalLeaderboard,
-    'Loading leaderboard...': 'Загрузка рейтинга...',
+    'Loading leaderboard...': UI_TEXT.loadingLeaderboard,
   };
 
   return map[statusText] || statusText || UI_TEXT.top10Leaderboard;
