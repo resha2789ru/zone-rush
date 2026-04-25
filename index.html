@@ -82,6 +82,7 @@
     (async () => {
       const fallbackVersion = '2026-04-25-2';
       let version = fallbackVersion;
+      const runtimeToken = Date.now().toString();
 
       try {
         const response = await fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' });
@@ -93,13 +94,15 @@
         console.warn('Version check failed, using fallback asset version.', error);
       }
 
+      const assetKey = `${version}-${runtimeToken}`;
+
       const style = document.createElement('link');
       style.rel = 'stylesheet';
-      style.href = `styles.css?v=${encodeURIComponent(version)}`;
+      style.href = `styles.css?v=${encodeURIComponent(assetKey)}`;
       document.head.appendChild(style);
 
       const script = document.createElement('script');
-      script.src = `game.js?v=${encodeURIComponent(version)}`;
+      script.src = `game.js?v=${encodeURIComponent(assetKey)}`;
       document.body.appendChild(script);
     })();
   </script>

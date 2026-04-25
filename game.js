@@ -464,38 +464,65 @@
         this.releaseCanvasTouchPointer(event);
       });
 
-      canvas.addEventListener(
+      app.addEventListener(
         'touchstart',
         (event) => {
           if (!isTouchDevice || event.touches.length < 2) return;
-          this.handleCanvasPinchTouch(event);
+          this.handleAppPinchTouch(event);
         },
         { passive: false }
       );
 
-      canvas.addEventListener(
+      app.addEventListener(
         'touchmove',
         (event) => {
           if (!isTouchDevice || event.touches.length < 2) return;
-          this.handleCanvasPinchTouch(event);
+          this.handleAppPinchTouch(event);
         },
         { passive: false }
       );
 
-      canvas.addEventListener(
+      app.addEventListener(
         'touchend',
         () => {
           if (!isTouchDevice) return;
-          this.handleCanvasPinchEnd();
+          this.handleAppPinchEnd();
         },
         { passive: false }
       );
 
-      canvas.addEventListener(
+      app.addEventListener(
         'touchcancel',
         () => {
           if (!isTouchDevice) return;
-          this.handleCanvasPinchEnd();
+          this.handleAppPinchEnd();
+        },
+        { passive: false }
+      );
+
+      app.addEventListener(
+        'gesturestart',
+        (event) => {
+          if (!isTouchDevice) return;
+          event.preventDefault();
+        },
+        { passive: false }
+      );
+
+      app.addEventListener(
+        'gesturechange',
+        (event) => {
+          if (!isTouchDevice) return;
+          event.preventDefault();
+        },
+        { passive: false }
+      );
+
+      app.addEventListener(
+        'gestureend',
+        (event) => {
+          if (!isTouchDevice) return;
+          event.preventDefault();
         },
         { passive: false }
       );
@@ -696,7 +723,7 @@
       }
     }
 
-    handleCanvasPinchTouch(event) {
+    handleAppPinchTouch(event) {
       event.preventDefault();
       this.sound.unlock();
 
@@ -718,7 +745,7 @@
       this.applyCameraZoom();
     }
 
-    handleCanvasPinchEnd() {
+    handleAppPinchEnd() {
       this.pinch.active = false;
       this.pinch.startDistance = 0;
       this.pinch.startZoom = this.userZoom;
