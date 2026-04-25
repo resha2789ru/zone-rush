@@ -8,6 +8,7 @@
   --text-muted: #93a4c3;
   --browser-ui-top: 0px;
   --browser-ui-bottom: 0px;
+  --app-height: 100dvh;
 }
 
 * {
@@ -280,8 +281,7 @@ body {
 
   #app {
     width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    height: var(--app-height);
     aspect-ratio: auto;
     border-radius: 0;
     border: none;

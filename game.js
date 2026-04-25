@@ -65,6 +65,8 @@
 
   const TRAP_COUNT = 6;
   const TRAP_RADIUS = 28;
+  const MIN_USER_ZOOM = 0.78;
+  const MAX_USER_ZOOM = 1.45;
 
   const keys = Object.create(null);
   const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
@@ -370,8 +372,12 @@
       this.sound = new SoundManager();
 
       this.camera = { x: 0, y: 0, zoom: 1 };
+      this.baseZoom = 1;
+      this.userZoom = 1;
       this.mouse = { x: canvas.width * 0.5, y: canvas.height * 0.5, active: false };
       this.touchMove = { active: false, x: 0, y: 0, pointerId: null };
+      this.touchPoints = new Map();
+      this.pinch = { active: false, startDistance: 0, startZoom: 1 };
       this.elapsed = 0;
       this.lastTime = 0;
       this.dashQueued = false;
@@ -436,6 +442,26 @@
 
       canvas.addEventListener('contextmenu', (event) => {
         event.preventDefault();
+      });
+
+      canvas.addEventListener('pointerdown', (event) => {
+        if (!isTouchDevice || event.pointerType !== 'touch') return;
+        this.handleCanvasTouchPointer(event);
+      });
+
+      canvas.addEventListener('pointermove', (event) => {
+        if (!isTouchDevice || event.pointerType !== 'touch') return;
+        this.handleCanvasTouchPointer(event);
+      });
+
+      canvas.addEventListener('pointerup', (event) => {
+        if (!isTouchDevice || event.pointerType !== 'touch') return;
+        this.releaseCanvasTouchPointer(event);
+      });
+
+      canvas.addEventListener('pointercancel', (event) => {
+        if (!isTouchDevice || event.pointerType !== 'touch') return;
+        this.releaseCanvasTouchPointer(event);
       });
 
       joystick.addEventListener('pointerdown', (event) => {
@@ -508,7 +534,13 @@
 
     updateResponsiveUi() {
       mobileControls.classList.toggle('active', isTouchDevice);
-      this.camera.zoom = isTouchDevice && canvas.height > canvas.width ? 1.12 : 1;
+      this.baseZoom = isTouchDevice && canvas.height > canvas.width ? 0.96 : 1;
+      this.applyCameraZoom();
+    }
+
+    applyCameraZoom() {
+      this.userZoom = clamp(this.userZoom, MIN_USER_ZOOM, MAX_USER_ZOOM);
+      this.camera.zoom = this.baseZoom * this.userZoom;
     }
 
     updateViewportInsets() {
@@ -518,6 +550,7 @@
       if (!viewport) {
         rootStyle.setProperty('--browser-ui-top', '0px');
         rootStyle.setProperty('--browser-ui-bottom', '0px');
+        rootStyle.setProperty('--app-height', `${window.innerHeight}px`);
         return;
       }
 
@@ -529,6 +562,7 @@
 
       rootStyle.setProperty('--browser-ui-top', `${topInset}px`);
       rootStyle.setProperty('--browser-ui-bottom', `${bottomInset}px`);
+      rootStyle.setProperty('--app-height', `${Math.round(viewport.height)}px`);
     }
 
     resizeCanvas() {
@@ -570,6 +604,52 @@
       joystickKnob.style.transform = 'translate(-50%, -50%)';
     }
 
+    getCanvasTouchPosition(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      };
+    }
+
+    getTouchDistance() {
+      const points = Array.from(this.touchPoints.values());
+      if (points.length < 2) return 0;
+      const [a, b] = points;
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    handleCanvasTouchPointer(event) {
+      event.preventDefault();
+      this.sound.unlock();
+      this.touchPoints.set(event.pointerId, this.getCanvasTouchPosition(event));
+
+      if (this.touchPoints.size >= 2) {
+        const distance = this.getTouchDistance();
+        if (!this.pinch.active) {
+          this.pinch.active = true;
+          this.pinch.startDistance = distance || 1;
+          this.pinch.startZoom = this.userZoom;
+        } else if (distance > 0) {
+          this.userZoom = clamp(
+            this.pinch.startZoom * (distance / this.pinch.startDistance),
+            MIN_USER_ZOOM,
+            MAX_USER_ZOOM
+          );
+          this.applyCameraZoom();
+        }
+      }
+    }
+
+    releaseCanvasTouchPointer(event) {
+      this.touchPoints.delete(event.pointerId);
+      if (this.touchPoints.size < 2) {
+        this.pinch.active = false;
+        this.pinch.startDistance = 0;
+        this.pinch.startZoom = this.userZoom;
+      }
+    }
+
     start() {
       this.state = 'playing';
       this.elapsed = 0;
@@ -590,6 +670,10 @@
       this.rocketQueued = false;
       this.rightMouseDown = false;
       this.resetJoystick();
+      this.touchPoints.clear();
+      this.pinch.active = false;
+      this.userZoom = 1;
+      this.applyCameraZoom();
 
       this.safeZone = new SafeZone(center, center);
 

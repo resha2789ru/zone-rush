@@ -16,6 +16,7 @@ No server setup is required for the MVP.
 - Shoot: `Left Mouse Button` or `F`
 - Rocket: `Right Mouse Button`
 - Mobile: left joystick + on-screen `Dash`, `Fire`, `Rocket` buttons
+- Mobile zoom: pinch with two fingers
 
 ## Implemented in MVP
 
@@ -27,6 +28,7 @@ No server setup is required for the MVP.
 - Rocket cooldown indicator in HUD (text + progress bar)
 - Mobile-friendly touch controls and fullscreen layout on phones
 - Tuned mobile camera zoom for a less cramped portrait view
+- Pinch-to-zoom on mobile devices
 - Shrinking circular safe zone
 - Out-of-zone health damage
 - 8+ AI bots that move and try to stay safe
