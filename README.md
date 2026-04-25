@@ -3,6 +3,8 @@
 
 Zone Rush is a lightweight HTML5 Canvas survival arena game built with vanilla JavaScript and browser-native ES modules.
 
+The current MVP also includes an optional Supabase-backed leaderboard and match statistics layer with a full localStorage fallback. If Supabase is disabled, slow, blocked, or misconfigured, gameplay still works and results are kept locally.
+
 ## Run
 
 1. Install dependencies with `npm install`.
@@ -23,14 +25,23 @@ Opening `index.html` directly can work in some browsers, but the local server is
 ## Project Layout
 
 - `src/main.js`: browser entrypoint
+- `src/config/supabaseConfig.js`: optional frontend Supabase settings
 - `src/core/`: orchestration, loop, state, input, camera
+- `src/persistence/`: local and Supabase save adapters
+- `src/services/`: browser service clients
 - `src/entities/`: player, bots, rockets, projectiles, particles
-- `src/systems/`: combat, zone, collision, bots, audio, mobile behavior
+- `src/systems/`: combat, zone, collision, bots, audio, mobile behavior, score, leaderboard, stats
 - `src/render/`: canvas-only drawing code
-- `src/ui/`: DOM HUD, menu, result, and mobile control helpers
+- `src/ui/`: DOM HUD, menu, leaderboard, result, and mobile control helpers
 - `styles/styles.css`: app styling
 - `tools/`: local server and mobile test tooling
 - `docs/`: project and architecture notes for future work
+
+## Supabase Notes
+
+- Use only the Supabase publishable / anon public key in frontend config.
+- Never use a `service_role`, secret key, direct database password, or connection string in this static frontend.
+- Frontend-only score submission is suitable for MVP and casual play, but it is not cheat-proof.
 
 ## Validation
 

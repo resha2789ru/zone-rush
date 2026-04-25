@@ -191,4 +191,10 @@ export function bindInput(game) {
     game.sound.unlock();
     game.start();
   });
+
+  if (game.dom.nicknameInput) {
+    const applyNickname = () => game.applyNickname(game.dom.nicknameInput.value);
+    game.dom.nicknameInput.addEventListener('change', applyNickname);
+    game.dom.nicknameInput.addEventListener('blur', applyNickname);
+  }
 }

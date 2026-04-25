@@ -1,4 +1,5 @@
 import { BALANCE_CONFIG } from '../config/balanceConfig.js';
+import { applyTrackedDamage } from './statsSystem.js';
 
 // ==================================================
 // COLLISION AND CONTACT DAMAGE
@@ -25,8 +26,14 @@ export function applyCollisionDamage(game, dt) {
       bot.x += nx * overlap * 0.5;
       bot.y += ny * overlap * 0.5;
 
-      game.player.takeDamage(BALANCE_CONFIG.playerBotCollisionDamagePerSecond * dt);
-      bot.takeDamage(BALANCE_CONFIG.playerBotCollisionDamagePerSecond * 0.75 * dt);
+      applyTrackedDamage(game, game.player, BALANCE_CONFIG.playerBotCollisionDamagePerSecond * dt, {
+        attacker: bot,
+        reason: 'collision',
+      });
+      applyTrackedDamage(game, bot, BALANCE_CONFIG.playerBotCollisionDamagePerSecond * 0.75 * dt, {
+        attacker: game.player,
+        reason: 'collision',
+      });
       game.spawnDashParticles(
         (game.player.x + bot.x) * 0.5,
         (game.player.y + bot.y) * 0.5,

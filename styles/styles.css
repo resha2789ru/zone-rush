@@ -177,6 +177,130 @@ body {
   margin: 6px 0;
 }
 
+.menu-profile,
+.leaderboard-panel,
+.result-panel {
+  width: min(760px, 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(78, 246, 255, 0.18);
+  background: rgba(7, 12, 28, 0.74);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  padding: 14px 16px;
+}
+
+.menu-profile {
+  margin-top: 10px;
+}
+
+.menu-input-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #a8bde9;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.menu-input {
+  width: 100%;
+  border: 1px solid rgba(78, 246, 255, 0.25);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #f1f5ff;
+  background: rgba(10, 17, 30, 0.88);
+  font: inherit;
+}
+
+.menu-profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.menu-profile-item {
+  color: #cbdaff;
+  font-size: 13px;
+}
+
+.leaderboard-panel {
+  margin: 10px 0 18px;
+}
+
+.leaderboard-panel h3,
+.result-panel h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d8f3ff;
+}
+
+.leaderboard-status {
+  margin: 0 0 10px;
+  color: #a8bde9;
+  font-size: 13px;
+}
+
+.leaderboard-wrap,
+.stats-table-wrap {
+  width: 100%;
+  overflow: auto;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.leaderboard-table th {
+  color: #9dc2f8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+}
+
+.leaderboard-empty {
+  color: #a8bde9;
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.result-meta {
+  width: min(760px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 6px 0 14px;
+}
+
+.result-statline {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(78, 246, 255, 0.2);
+  background: rgba(7, 12, 28, 0.74);
+  color: #f1f5ff;
+}
+
+.result-panel {
+  margin-bottom: 12px;
+}
+
+.leaderboard-panel-result {
+  margin-bottom: 18px;
+}
+
 .action-btn {
   border: none;
   border-radius: 999px;
@@ -287,6 +411,25 @@ body {
 
   .controls {
     font-size: 13px;
+  }
+
+  .menu-profile,
+  .leaderboard-panel,
+  .result-panel {
+    padding: 12px;
+  }
+
+  .result-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-table {
+    font-size: 12px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 7px 8px;
   }
 
   body {

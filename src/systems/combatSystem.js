@@ -3,6 +3,13 @@ import { Explosion } from '../entities/particles.js';
 import { Projectile } from '../entities/projectile.js';
 import { Rocket } from '../entities/rocket.js';
 import { distance } from '../utils/geometry.js';
+import {
+  applyTrackedDamage,
+  incrementRocketHit,
+  incrementRocketsFired,
+  incrementShotsFired,
+  incrementShotsHit,
+} from './statsSystem.js';
 
 // ==================================================
 // WEAPONS AND COMBAT RESOLUTION
@@ -16,7 +23,10 @@ export function shootProjectile(game, player) {
   const vx = player.lastDirX * BALANCE_CONFIG.projectileSpeed;
   const vy = player.lastDirY * BALANCE_CONFIG.projectileSpeed;
 
-  game.projectiles.push(new Projectile(bulletX, bulletY, vx, vy));
+  const projectile = new Projectile(bulletX, bulletY, vx, vy);
+  projectile.owner = player;
+  game.projectiles.push(projectile);
+  incrementShotsFired(game, player);
   game.spawnDashParticles(bulletX, bulletY, player.lastDirX, player.lastDirY, '#b5fdff', 5);
   game.sound.shoot();
 }
@@ -29,24 +39,38 @@ export function shootRocket(game, player) {
   const vx = player.lastDirX * BALANCE_CONFIG.rocketSpeed;
   const vy = player.lastDirY * BALANCE_CONFIG.rocketSpeed;
 
-  game.rockets.push(new Rocket(rocketX, rocketY, vx, vy));
+  const rocket = new Rocket(rocketX, rocketY, vx, vy);
+  rocket.owner = player;
+  rocket.statsHitCounted = false;
+  game.rockets.push(rocket);
+  incrementRocketsFired(game, player);
   game.spawnDashParticles(rocketX, rocketY, -player.lastDirX, -player.lastDirY, '#ffb36c', 10);
   game.sound.rocket();
 }
 
-export function explodeRocket(game, x, y) {
+export function explodeRocket(game, x, y, rocket = null) {
   game.explosions.push(new Explosion(x, y, BALANCE_CONFIG.rocketBlastRadius));
   game.spawnDashParticles(x, y, 0, 0, '#ff9d54', 36);
   game.spawnDashParticles(x, y, 0, 0, '#ffe0a8', 24);
   game.sound.explosion();
 
+  let hitAnyTarget = false;
   for (const bot of game.bots) {
     if (!bot.alive) continue;
     const currentDistance = distance(x, y, bot.x, bot.y);
     if (currentDistance <= BALANCE_CONFIG.rocketBlastRadius) {
       const factor = 1 - currentDistance / BALANCE_CONFIG.rocketBlastRadius;
-      bot.takeDamage(BALANCE_CONFIG.rocketBlastDamage * factor);
+      const { actualDamage } = applyTrackedDamage(game, bot, BALANCE_CONFIG.rocketBlastDamage * factor, {
+        attacker: rocket?.owner || null,
+        reason: 'rocket_blast',
+      });
+      if (actualDamage > 0) hitAnyTarget = true;
     }
+  }
+
+  if (hitAnyTarget && rocket?.owner && !rocket.statsHitCounted) {
+    rocket.statsHitCounted = true;
+    incrementRocketHit(game, rocket.owner);
   }
 }
 
@@ -59,7 +83,10 @@ export function updateProjectiles(game, dt) {
       if (!bot.alive || !projectile.alive) continue;
       const currentDistance = distance(projectile.x, projectile.y, bot.x, bot.y);
       if (currentDistance <= bot.radius + projectile.radius) {
-        bot.takeDamage(BALANCE_CONFIG.projectileDamage);
+        const { actualDamage } = applyTrackedDamage(game, bot, BALANCE_CONFIG.projectileDamage, {
+          attacker: projectile.owner || null,
+          reason: 'projectile',
+        });
         projectile.alive = false;
         const dx = bot.x - projectile.x;
         const dy = bot.y - projectile.y;
@@ -69,6 +96,7 @@ export function updateProjectiles(game, dt) {
           dx / (currentDistance || 1),
           dy / (currentDistance || 1)
         );
+        if (actualDamage > 0 && projectile.owner) incrementShotsHit(game, projectile.owner);
         game.sound.hit();
       }
     }
@@ -95,17 +123,24 @@ export function updateRockets(game, dt) {
     );
 
     if (!rocket.alive) {
-      explodeRocket(game, rocket.x, rocket.y);
-      continue;
-    }
+          explodeRocket(game, rocket.x, rocket.y, rocket);
+          continue;
+        }
 
     for (const bot of game.bots) {
       if (!bot.alive || !rocket.alive) continue;
       const currentDistance = distance(rocket.x, rocket.y, bot.x, bot.y);
       if (currentDistance <= bot.radius + rocket.radius) {
-        bot.takeDamage(BALANCE_CONFIG.rocketDirectDamage);
+        const { actualDamage } = applyTrackedDamage(game, bot, BALANCE_CONFIG.rocketDirectDamage, {
+          attacker: rocket.owner || null,
+          reason: 'rocket_direct',
+        });
         rocket.alive = false;
-        explodeRocket(game, rocket.x, rocket.y);
+        if (actualDamage > 0 && rocket.owner && !rocket.statsHitCounted) {
+          rocket.statsHitCounted = true;
+          incrementRocketHit(game, rocket.owner);
+        }
+        explodeRocket(game, rocket.x, rocket.y, rocket);
       }
     }
   }

@@ -55,6 +55,20 @@
 - Lose by reaching 0 HP.
 - If the timer expires, the match ends in timeout.
 
+## Score And Statistics
+
+- Score is calculated as `survived_seconds * 10 + kills * 100 + damage_dealt + win_bonus`.
+- `win_bonus` is `1000` for a win and `0` otherwise.
+- Match statistics are tracked for the human player and every bot.
+- The result screen shows score, best score, save status, a participant table, and a leaderboard preview.
+
+## Saving And Leaderboard
+
+- The game creates a local guest player id and nickname for MVP progression.
+- Local storage is always written first.
+- If Supabase is configured and reachable, the game also writes match rows and leaderboard scores online.
+- If Supabase fails or times out, the UI falls back to local save status without blocking gameplay.
+
 ## Mobile Controls
 
 - Left joystick controls movement.

@@ -22,6 +22,11 @@ function getDomRefs() {
     rocketBtn: document.getElementById('rocketBtn'),
     playBtn: document.getElementById('playBtn'),
     playAgainBtn: document.getElementById('playAgainBtn'),
+    nicknameInput: document.getElementById('nicknameInput'),
+    menuPlayerId: document.getElementById('menuPlayerId'),
+    menuBestScore: document.getElementById('menuBestScore'),
+    menuLeaderboardStatus: document.getElementById('menuLeaderboardStatus'),
+    menuLeaderboard: document.getElementById('menuLeaderboard'),
     hpBar: document.getElementById('hpBar'),
     hpText: document.getElementById('hpText'),
     playersLeft: document.getElementById('playersLeft'),
@@ -32,6 +37,12 @@ function getDomRefs() {
     rocketCdBar: document.getElementById('rocketCdBar'),
     resultTitle: document.getElementById('resultTitle'),
     resultText: document.getElementById('resultText'),
+    resultScore: document.getElementById('resultScore'),
+    resultBest: document.getElementById('resultBest'),
+    resultSaveStatus: document.getElementById('resultSaveStatus'),
+    resultStatsTable: document.getElementById('resultStatsTable'),
+    resultLeaderboardStatus: document.getElementById('resultLeaderboardStatus'),
+    resultLeaderboard: document.getElementById('resultLeaderboard'),
   };
 }
 

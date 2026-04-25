@@ -2,6 +2,7 @@ import { BALANCE_CONFIG } from '../config/balanceConfig.js';
 import { GAME_CONFIG } from '../config/gameConfig.js';
 import { distance } from '../utils/geometry.js';
 import { rand } from '../utils/random.js';
+import { applyTrackedDamage } from './statsSystem.js';
 
 // ==================================================
 // SAFE ZONE AND ENVIRONMENTAL HAZARDS
@@ -48,7 +49,11 @@ export function applyZoneDamage(game, dt) {
     if (!entity || !entity.alive) continue;
     const currentDistance = distance(entity.x, entity.y, game.safeZone.centerX, game.safeZone.centerY);
     const outside = currentDistance > game.safeZone.radius - entity.radius;
-    if (outside) entity.takeDamage(zoneDamagePerSecond * dt);
+    if (outside) {
+      applyTrackedDamage(game, entity, zoneDamagePerSecond * dt, {
+        reason: 'zone',
+      });
+    }
   }
 }
 
@@ -57,7 +62,9 @@ export function applyTrapDamage(game, dt) {
     for (const entity of [game.player, ...game.bots]) {
       if (!entity || !entity.alive) continue;
       if (distance(entity.x, entity.y, trap.x, trap.y) < trap.radius + entity.radius) {
-        entity.takeDamage(BALANCE_CONFIG.trapDamagePerSecond * dt);
+        applyTrackedDamage(game, entity, BALANCE_CONFIG.trapDamagePerSecond * dt, {
+          reason: 'trap',
+        });
       }
     }
   }

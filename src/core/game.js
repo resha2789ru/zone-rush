@@ -1,22 +1,31 @@
 import { BALANCE_CONFIG } from '../config/balanceConfig.js';
 import { CONTROLS_CONFIG } from '../config/controlsConfig.js';
 import { GAME_CONFIG } from '../config/gameConfig.js';
+import { createSaveAdapter } from '../persistence/saveAdapter.js';
 import { Bot } from '../entities/bot.js';
 import { Particle } from '../entities/particles.js';
 import { Player } from '../entities/player.js';
 import { renderGame } from '../render/renderer.js';
+import { refreshLeaderboard } from '../systems/leaderboardSystem.js';
 import { SoundManager } from '../systems/audioSystem.js';
 import { findNearestBot, updateBots } from '../systems/botSystem.js';
 import { shootProjectile, shootRocket, updateProjectiles, updateRockets } from '../systems/combatSystem.js';
 import { applyCollisionDamage } from '../systems/collisionSystem.js';
 import { resetJoystick, resizeCanvas, updateResponsiveUi, updateViewportInsets } from '../systems/mobileSystem.js';
+import {
+  buildMatchPersistencePayload,
+  incrementDashUsed,
+  initializeMatchStats,
+} from '../systems/statsSystem.js';
 import { applyTrapDamage, applyZoneDamage, createSafeZone, createTrap, updateSafeZone } from '../systems/zoneSystem.js';
 import { clamp } from '../utils/math.js';
 import { normalize } from '../utils/geometry.js';
 import { rand } from '../utils/random.js';
 import { showHud, updateHud } from '../ui/hud.js';
 import { showMenu } from '../ui/menu.js';
+import { renderLeaderboard } from '../ui/leaderboard.js';
 import { showMobileControls } from '../ui/mobileControls.js';
+import { updateMenuProfile } from '../ui/menu.js';
 import { showResult, updateResultScreen } from '../ui/resultScreen.js';
 import { applyCameraZoom, updateCamera } from './camera.js';
 import { bindInput } from './input.js';
@@ -33,14 +42,20 @@ export class Game {
     this.canvas = dom.canvas;
     this.ctx = this.canvas.getContext('2d');
     this.sound = new SoundManager();
+    this.saveAdapter = createSaveAdapter();
 
     Object.assign(this, createGameState(this.canvas));
+    this.playerProfile = this.saveAdapter.getProfile();
+    this.uiState.bestScore = this.playerProfile.bestScore || 0;
 
     bindInput(this);
     resizeCanvas(this);
     updateResponsiveUi(this);
     updateViewportInsets();
     showMobileControls(this.dom, this.isTouchDevice);
+    this.renderMenuProfile();
+    this.renderLeaderboardPanels();
+    void this.initializePersistence();
     startLoop(this);
   }
 
@@ -69,6 +84,8 @@ export class Game {
 
     const center = GAME_CONFIG.worldSize / 2;
     this.player = new Player(center + rand(-80, 80), center + rand(-80, 80));
+    this.player.playerId = this.playerProfile.playerId;
+    this.player.nickname = this.playerProfile.nickname;
     this.bots = [];
     this.traps = [];
     this.particles = [];
@@ -94,7 +111,10 @@ export class Game {
         bx += rand(120, 200);
         by += rand(120, 200);
       }
-      this.bots.push(new Bot(bx, by));
+      const bot = new Bot(bx, by);
+      bot.playerId = `bot_${index + 1}`;
+      bot.nickname = `Bot ${index + 1}`;
+      this.bots.push(bot);
     }
 
     for (let index = 0; index < GAME_CONFIG.trapCount; index += 1) {
@@ -103,6 +123,7 @@ export class Game {
       );
     }
 
+    initializeMatchStats(this);
     showMenu(this.dom, false);
     showResult(this.dom, false);
     showHud(this.dom, true);
@@ -110,12 +131,20 @@ export class Game {
   }
 
   endMatch(win, reason) {
+    if (this.state === 'result') return;
+
     this.state = 'result';
     this.resultReason = reason;
     this.lastSurvived = this.elapsed;
+    const payload = buildMatchPersistencePayload(this, reason);
+    this.uiState.resultPlayerSummary = payload.playerSummary;
+    this.uiState.resultStatsRows = payload.resultRows;
+    this.uiState.bestScore = Math.max(this.uiState.bestScore || 0, payload.playerSummary.score || 0);
+    this.uiState.saveStatusText = this.saveAdapter.mode === 'supabase' ? 'Saving online...' : 'Saved locally';
     showHud(this.dom, false);
     showResult(this.dom, true);
     updateResultScreen(this, win, reason);
+    void this.persistMatchResult(payload, win, reason);
   }
 
   updatePlayer(dt) {
@@ -172,6 +201,7 @@ export class Game {
     if (this.dashQueued && player.dashCooldown <= 0) {
       player.dashCooldown = BALANCE_CONFIG.playerDashCooldown;
       player.dashTimer = BALANCE_CONFIG.playerDashDuration;
+      incrementDashUsed(this, player);
       this.spawnDashParticles(player.x, player.y, player.lastDirX, player.lastDirY, '#88f7ff', 26);
       this.sound.dash();
     }
@@ -278,5 +308,66 @@ export class Game {
 
   render() {
     renderGame(this);
+  }
+
+  applyNickname(value) {
+    const nickname = this.saveAdapter.setNickname(value);
+    this.playerProfile = this.saveAdapter.getProfile();
+    this.playerProfile.nickname = nickname;
+    this.uiState.bestScore = this.playerProfile.bestScore || 0;
+    this.renderMenuProfile();
+    return nickname;
+  }
+
+  renderMenuProfile() {
+    updateMenuProfile(this.dom, this.playerProfile);
+    if (this.dom.menuLeaderboardStatus && !this.uiState.leaderboardStatus) {
+      this.dom.menuLeaderboardStatus.textContent = 'Top 10 leaderboard';
+    }
+  }
+
+  renderLeaderboardPanels() {
+    if (this.dom.menuLeaderboardStatus) {
+      this.dom.menuLeaderboardStatus.textContent =
+        this.uiState.leaderboardStatus || 'Top 10 leaderboard';
+    }
+    if (this.dom.resultLeaderboardStatus) {
+      this.dom.resultLeaderboardStatus.textContent =
+        this.uiState.leaderboardStatus || 'Top 10 leaderboard';
+    }
+
+    renderLeaderboard(
+      this.dom.menuLeaderboard,
+      this.uiState.menuLeaderboard,
+      this.uiState.leaderboardStatus || 'Leaderboard unavailable'
+    );
+    renderLeaderboard(
+      this.dom.resultLeaderboard,
+      this.uiState.resultLeaderboard,
+      this.uiState.leaderboardStatus || 'Leaderboard unavailable'
+    );
+  }
+
+  async initializePersistence() {
+    this.playerProfile = this.saveAdapter.getProfile();
+    this.uiState.bestScore = this.playerProfile.bestScore || 0;
+    this.renderMenuProfile();
+    await refreshLeaderboard(this);
+  }
+
+  async persistMatchResult(payload, win, reason) {
+    const result = await this.saveAdapter.saveMatch(payload);
+    this.playerProfile = result.profile || this.saveAdapter.getProfile();
+    this.uiState.bestScore = this.playerProfile.bestScore || this.uiState.bestScore;
+    this.uiState.saveStatusText = result.statusText || 'Saved locally';
+    this.uiState.resultLeaderboard = result.leaderboard || this.uiState.resultLeaderboard;
+    this.uiState.menuLeaderboard = result.leaderboard || this.uiState.menuLeaderboard;
+    this.uiState.leaderboardStatus =
+      result.mode === 'supabase'
+        ? ((result.leaderboard || []).length > 0 ? '' : 'Leaderboard unavailable')
+        : 'Showing local leaderboard';
+    this.renderMenuProfile();
+    this.renderLeaderboardPanels();
+    updateResultScreen(this, win, reason);
   }
 }
