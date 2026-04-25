@@ -3,19 +3,49 @@
    and the Play Again button. Keep it scrollable inside the game shell so
    content is not clipped on shorter desktop or mobile viewports. */
 
+html,
+body,
+#app,
+.overlay,
+.leaderboard-wrap,
+.stats-table-wrap {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#app::-webkit-scrollbar,
+.overlay::-webkit-scrollbar,
+.leaderboard-wrap::-webkit-scrollbar,
+.stats-table-wrap::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+#app::-webkit-scrollbar-track,
+.overlay::-webkit-scrollbar-track,
+.leaderboard-wrap::-webkit-scrollbar-track,
+.stats-table-wrap::-webkit-scrollbar-track,
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+#app::-webkit-scrollbar-thumb,
+.overlay::-webkit-scrollbar-thumb,
+.leaderboard-wrap::-webkit-scrollbar-thumb,
+.stats-table-wrap::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border: 0 !important;
+}
+
 .overlay {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.overlay::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
 }
 
 #result.overlay {
