@@ -1,0 +1,39 @@
+/* Result screen overflow fixes.
+   The result overlay can contain score cards, match statistics, leaderboard,
+   and the Play Again button. Keep it scrollable inside the game shell so
+   content is not clipped on shorter desktop or mobile viewports. */
+
+.overlay {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+#result.overlay {
+  justify-content: flex-start;
+  padding-top: max(24px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+}
+
+#result .result-meta,
+#result .result-panel,
+#result .leaderboard-panel,
+#result .action-btn {
+  flex: 0 0 auto;
+}
+
+#result .leaderboard-panel-result {
+  margin-bottom: 14px;
+}
+
+#result .action-btn {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 860px), (hover: none) and (pointer: coarse) {
+  #result.overlay {
+    padding-top: calc(16px + env(safe-area-inset-top, 0px) + var(--browser-ui-top));
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px) + var(--browser-ui-bottom));
+  }
+}
