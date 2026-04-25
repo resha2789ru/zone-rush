@@ -385,6 +385,7 @@
       this.bindEvents();
       this.resizeCanvas();
       this.updateResponsiveUi();
+      this.updateViewportInsets();
       this.loop = this.loop.bind(this);
       requestAnimationFrame(this.loop);
     }
@@ -487,7 +488,13 @@
       window.addEventListener('resize', () => {
         this.resizeCanvas();
         this.updateResponsiveUi();
+        this.updateViewportInsets();
       });
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => this.updateViewportInsets());
+        window.visualViewport.addEventListener('scroll', () => this.updateViewportInsets());
+      }
 
       playBtn.addEventListener('click', () => {
         this.sound.unlock();
@@ -502,6 +509,26 @@
     updateResponsiveUi() {
       mobileControls.classList.toggle('active', isTouchDevice);
       this.camera.zoom = isTouchDevice && canvas.height > canvas.width ? 1.12 : 1;
+    }
+
+    updateViewportInsets() {
+      const rootStyle = document.documentElement.style;
+      const viewport = window.visualViewport;
+
+      if (!viewport) {
+        rootStyle.setProperty('--browser-ui-top', '0px');
+        rootStyle.setProperty('--browser-ui-bottom', '0px');
+        return;
+      }
+
+      const topInset = Math.max(0, Math.round(viewport.offsetTop));
+      const bottomInset = Math.max(
+        0,
+        Math.round(window.innerHeight - viewport.height - viewport.offsetTop)
+      );
+
+      rootStyle.setProperty('--browser-ui-top', `${topInset}px`);
+      rootStyle.setProperty('--browser-ui-bottom', `${bottomInset}px`);
     }
 
     resizeCanvas() {

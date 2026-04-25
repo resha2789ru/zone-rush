@@ -6,6 +6,8 @@
   --line-zone: #a9ff4f;
   --text-main: #ecf4ff;
   --text-muted: #93a4c3;
+  --browser-ui-top: 0px;
+  --browser-ui-bottom: 0px;
 }
 
 * {
@@ -50,7 +52,7 @@ body {
 
 .panel {
   position: absolute;
-  top: calc(14px + env(safe-area-inset-top, 0px));
+  top: calc(14px + env(safe-area-inset-top, 0px) + var(--browser-ui-top));
   left: 14px;
   right: 14px;
   z-index: 5;
@@ -188,7 +190,7 @@ body {
 
 .mobile-controls {
   position: absolute;
-  inset: auto 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
+  inset: auto 16px calc(16px + env(safe-area-inset-bottom, 0px) + var(--browser-ui-bottom)) 16px;
   z-index: 7;
   display: none;
   align-items: flex-end;
@@ -283,11 +285,11 @@ body {
     aspect-ratio: auto;
     border-radius: 0;
     border: none;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--browser-ui-bottom));
   }
 
   .panel {
-    top: calc(10px + env(safe-area-inset-top, 0px));
+    top: calc(10px + env(safe-area-inset-top, 0px) + var(--browser-ui-top));
     left: 10px;
     right: 10px;
   }
