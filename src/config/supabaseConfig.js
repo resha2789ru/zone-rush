@@ -5,6 +5,6 @@
 export const SUPABASE_CONFIG = {
   enabled: true,
   url: 'https://mvgxejvsrvjgvwbrxkcm.supabase.co',
-  publishableKey: 'PASTE_SUPABASE_PUBLISHABLE_KEY_HERE',
+  publishableKey: 'sb_publishable_VPn63RwRsu8Xujh7Rip6Bw_iKXJHfdY',
   requestTimeoutMs: 5000,
 };
