@@ -2,9 +2,11 @@
   "name": "zone-rush",
   "version": "1.0.0",
   "description": "Zone Rush is a fast top-down browser survival arena game built with HTML5 Canvas and vanilla JavaScript.",
-  "main": "game.js",
+  "main": "src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./tools/local-server.js",
+    "test": "node ./tools/mobile-check.js",
+    "test:mobile": "node ./tools/mobile-check.js"
   },
   "repository": {
     "type": "git",

@@ -3,7 +3,7 @@ const path = require('path');
 const { chromium, devices } = require('playwright');
 
 const BASE_URL = 'http://127.0.0.1:4173/index.html';
-const ARTIFACT_DIR = path.join(process.cwd(), 'test-artifacts', 'mobile');
+const ARTIFACT_DIR = path.join(process.cwd(), 'test-artifacts', 'screenshots', 'mobile');
 
 const scenarios = [
   { name: 'iphone-13-portrait', device: 'iPhone 13' },

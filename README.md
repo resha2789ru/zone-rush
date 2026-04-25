@@ -1,50 +1,37 @@
-﻿# Zone Rush
+# Zone Rush
 
-Zone Rush is a fast top-down browser survival arena game built with HTML5 Canvas and vanilla JavaScript.
+Zone Rush is a lightweight HTML5 Canvas survival arena game built with vanilla JavaScript and browser-native ES modules.
 
-## How to Run
+## Run
 
-1. Open `index.html` in any modern browser.
-2. Press **Play** to start the match.
+1. Install dependencies with `npm install`.
+2. Start the local server with `npm start`.
+3. Open [http://127.0.0.1:4173](http://127.0.0.1:4173).
 
-No server setup is required for the MVP.
+Opening `index.html` directly can work in some browsers, but the local server is the safest way to test modules and mobile checks.
 
 ## Controls
 
 - Move: `WASD` or `Arrow Keys`
-- Dash: `Space` (with cooldown)
+- Dash: `Space`
 - Shoot: `Left Mouse Button` or `F`
 - Rocket: `Right Mouse Button`
-- Mobile: left joystick + on-screen `Dash`, `Fire`, `Rocket` buttons
-- Mobile zoom: pinch with two fingers
+- Mobile: left joystick plus on-screen `Dash`, `Fire`, and `Rocket` buttons
+- Mobile zoom: two-finger pinch
 
-## Implemented in MVP
+## Project Layout
 
-- Main menu with quick controls
-- Top-down arena with map boundaries
-- Player movement and dash with particle effects
-- Player shooting with projectile hits on bots
-- Rocket attack with jet trail and explosion splash damage
-- Rocket cooldown indicator in HUD (text + progress bar)
-- Mobile-friendly touch controls and fullscreen layout on phones
-- Tuned mobile camera zoom for a less cramped portrait view
-- Pinch-to-zoom on mobile devices
-- Shrinking circular safe zone
-- Out-of-zone health damage
-- 8+ AI bots that move and try to stay safe
-- Bots can be eliminated by zone, traps, and collisions
-- Characters rendered as simple human figures (instead of circles)
-- Bot HP bars above each enemy
-- Synthesized sound effects for shots, dash, hits, rockets, and explosions
-- HUD with HP, players left, timer, and dash cooldown
-- Win/Lose result screen with **Play Again**
-- Match time limit: 3 minutes
+- `src/main.js`: browser entrypoint
+- `src/core/`: orchestration, loop, state, input, camera
+- `src/entities/`: player, bots, rockets, projectiles, particles
+- `src/systems/`: combat, zone, collision, bots, audio, mobile behavior
+- `src/render/`: canvas-only drawing code
+- `src/ui/`: DOM HUD, menu, result, and mobile control helpers
+- `styles/styles.css`: app styling
+- `tools/`: local server and mobile test tooling
+- `docs/`: project and architecture notes for future work
 
-## Future Ideas
+## Validation
 
-- Real multiplayer and matchmaking
-- More advanced bot behavior and difficulty levels
-- Loot, power-ups, and weapons
-- Multiple arenas and random events
-- Sound effects and music settings
-- Mobile touch controls
+- Run mobile layout checks with `npm run test:mobile`.
+- Artifacts are written into `test-artifacts/screenshots/mobile`.

@@ -7,6 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Zone Rush</title>
+  <link rel="stylesheet" href="./styles/styles.css" />
 </head>
 <body>
   <div id="app">
@@ -78,33 +79,6 @@
     </div>
   </div>
 
-  <script>
-    (async () => {
-      const fallbackVersion = '2026-04-25-2';
-      let version = fallbackVersion;
-      const runtimeToken = Date.now().toString();
-
-      try {
-        const response = await fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' });
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.version) version = data.version;
-        }
-      } catch (error) {
-        console.warn('Version check failed, using fallback asset version.', error);
-      }
-
-      const assetKey = `${version}-${runtimeToken}`;
-
-      const style = document.createElement('link');
-      style.rel = 'stylesheet';
-      style.href = `styles.css?v=${encodeURIComponent(assetKey)}`;
-      document.head.appendChild(style);
-
-      const script = document.createElement('script');
-      script.src = `game.js?v=${encodeURIComponent(assetKey)}`;
-      document.body.appendChild(script);
-    })();
-  </script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>
