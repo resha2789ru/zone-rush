@@ -464,6 +464,42 @@
         this.releaseCanvasTouchPointer(event);
       });
 
+      canvas.addEventListener(
+        'touchstart',
+        (event) => {
+          if (!isTouchDevice || event.touches.length < 2) return;
+          this.handleCanvasPinchTouch(event);
+        },
+        { passive: false }
+      );
+
+      canvas.addEventListener(
+        'touchmove',
+        (event) => {
+          if (!isTouchDevice || event.touches.length < 2) return;
+          this.handleCanvasPinchTouch(event);
+        },
+        { passive: false }
+      );
+
+      canvas.addEventListener(
+        'touchend',
+        () => {
+          if (!isTouchDevice) return;
+          this.handleCanvasPinchEnd();
+        },
+        { passive: false }
+      );
+
+      canvas.addEventListener(
+        'touchcancel',
+        () => {
+          if (!isTouchDevice) return;
+          this.handleCanvasPinchEnd();
+        },
+        { passive: false }
+      );
+
       joystick.addEventListener('pointerdown', (event) => {
         if (!isTouchDevice) return;
         event.preventDefault();
@@ -619,6 +655,16 @@
       return Math.hypot(a.x - b.x, a.y - b.y);
     }
 
+    getDistanceFromTouches(touches) {
+      if (!touches || touches.length < 2) return 0;
+      const rect = canvas.getBoundingClientRect();
+      const ax = touches[0].clientX - rect.left;
+      const ay = touches[0].clientY - rect.top;
+      const bx = touches[1].clientX - rect.left;
+      const by = touches[1].clientY - rect.top;
+      return Math.hypot(ax - bx, ay - by);
+    }
+
     handleCanvasTouchPointer(event) {
       event.preventDefault();
       this.sound.unlock();
@@ -648,6 +694,34 @@
         this.pinch.startDistance = 0;
         this.pinch.startZoom = this.userZoom;
       }
+    }
+
+    handleCanvasPinchTouch(event) {
+      event.preventDefault();
+      this.sound.unlock();
+
+      const distance = this.getDistanceFromTouches(event.touches);
+      if (!distance) return;
+
+      if (!this.pinch.active) {
+        this.pinch.active = true;
+        this.pinch.startDistance = distance;
+        this.pinch.startZoom = this.userZoom;
+        return;
+      }
+
+      this.userZoom = clamp(
+        this.pinch.startZoom * (distance / this.pinch.startDistance),
+        MIN_USER_ZOOM,
+        MAX_USER_ZOOM
+      );
+      this.applyCameraZoom();
+    }
+
+    handleCanvasPinchEnd() {
+      this.pinch.active = false;
+      this.pinch.startDistance = 0;
+      this.pinch.startZoom = this.userZoom;
     }
 
     start() {
