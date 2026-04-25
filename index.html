@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zone Rush</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+    <div id="hud" class="panel hidden">
+      <div class="hud-row">
+        <div class="stat">
+          <span class="label">HP</span>
+          <div class="hp-wrap">
+            <div id="hpBar" class="hp-bar"></div>
+          </div>
+          <span id="hpText" class="value">100</span>
+        </div>
+        <div class="stat">
+          <span class="label">Players Left</span>
+          <span id="playersLeft" class="value">0</span>
+        </div>
+        <div class="stat">
+          <span class="label">Time</span>
+          <span id="timer" class="value">00:00</span>
+        </div>
+        <div class="stat">
+          <span class="label">Dash</span>
+          <span id="dash" class="value">Ready</span>
+        </div>
+        <div class="stat">
+          <span class="label">Shoot</span>
+          <span id="shoot" class="value">Ready</span>
+        </div>
+        <div class="stat">
+          <span class="label">Rocket</span>
+          <span id="rocket" class="value">Ready</span>
+          <div class="cd-wrap">
+            <div id="rocketCdBar" class="cd-bar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="menu" class="overlay visible">
+      <h1>Zone Rush</h1>
+      <p class="subtitle">Fast neon survival arena. Stay inside the safe zone and outlast everyone.</p>
+      <div class="controls">
+        <p><strong>Move:</strong> WASD or Arrow Keys</p>
+        <p><strong>Dash:</strong> Space (cooldown)</p>
+        <p><strong>Shoot:</strong> Left Mouse Button or F</p>
+        <p><strong>Rocket:</strong> Right Mouse Button</p>
+      </div>
+      <button id="playBtn" class="action-btn">Play</button>
+    </div>
+
+    <div id="result" class="overlay hidden">
+      <h2 id="resultTitle">Match Over</h2>
+      <p id="resultText">You lasted 00:00</p>
+      <button id="playAgainBtn" class="action-btn">Play Again</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
