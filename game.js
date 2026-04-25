@@ -1014,8 +1014,8 @@
       const dirX = (isPlayer ? this.player.lastDirX : entity.lastDirX) || 0;
       const dirY = (isPlayer ? this.player.lastDirY : entity.lastDirY) || 1;
       const angle = Math.atan2(dirY, dirX) + Math.PI / 2;
-      const bodyColor = isPlayer ? '#5defff' : '#ff76cb';
-      const armorColor = isPlayer ? '#0f2f4a' : '#4c1e48';
+      const bodyColor = isPlayer ? '#6df3ff' : '#ff7acb';
+      const armorColor = isPlayer ? '#163a56' : '#5a2553';
       const glowColor = isPlayer ? '#67f4ff' : '#ff77cf';
 
       ctx.save();
@@ -1026,33 +1026,44 @@
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.36)';
       ctx.beginPath();
-      ctx.ellipse(0, entity.radius * 0.7, entity.radius * 0.72, entity.radius * 0.42, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, entity.radius * 0.72, entity.radius * 0.78, entity.radius * 0.48, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = armorColor;
+      ctx.beginPath();
+      ctx.ellipse(0, entity.radius * 0.08, entity.radius * 0.72, entity.radius * 0.9, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = bodyColor;
-      ctx.fillRect(-entity.radius * 0.55, -entity.radius * 0.35, entity.radius * 1.1, entity.radius * 1.35);
+      ctx.beginPath();
+      ctx.ellipse(0, entity.radius * 0.04, entity.radius * 0.54, entity.radius * 0.7, 0, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.fillStyle = armorColor;
-      ctx.fillRect(-entity.radius * 0.38, -entity.radius * 0.2, entity.radius * 0.76, entity.radius * 0.78);
+      ctx.beginPath();
+      ctx.arc(-entity.radius * 0.45, -entity.radius * 0.02, entity.radius * 0.18, 0, Math.PI * 2);
+      ctx.arc(entity.radius * 0.45, -entity.radius * 0.02, entity.radius * 0.18, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.fillStyle = '#ffd7b5';
       ctx.beginPath();
-      ctx.arc(0, -entity.radius * 0.86, entity.radius * 0.42, 0, Math.PI * 2);
+      ctx.arc(0, -entity.radius * 0.78, entity.radius * 0.36, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.strokeStyle = '#e8f8ff';
-      ctx.lineWidth = 2.3;
+      ctx.lineWidth = 2.8;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(0, -entity.radius * 0.26);
-      ctx.lineTo(0, -entity.radius * 1.18);
+      ctx.moveTo(0, -entity.radius * 0.1);
+      ctx.lineTo(0, -entity.radius * 1.2);
       ctx.stroke();
 
       if (isPlayer) {
         ctx.strokeStyle = '#9efcff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 3.2;
         ctx.beginPath();
-        ctx.moveTo(0, -entity.radius * 1.18);
-        ctx.lineTo(0, -entity.radius * 1.46);
+        ctx.moveTo(0, -entity.radius * 1.2);
+        ctx.lineTo(0, -entity.radius * 1.52);
         ctx.stroke();
       }
 
