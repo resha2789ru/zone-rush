@@ -8,6 +8,7 @@
   <meta http-equiv="Expires" content="0" />
   <title>Zone Rush</title>
   <link rel="stylesheet" href="./styles/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div id="app">
@@ -51,6 +52,14 @@
     <div id="menu" class="overlay visible">
       <h1>Zone Rush</h1>
       <p class="subtitle">Fast neon survival arena. Stay inside the safe zone and outlast everyone.</p>
+      <div class="menu-profile">
+        <label class="menu-input-label" for="nicknameInput">Nickname</label>
+        <input id="nicknameInput" class="menu-input" type="text" maxlength="24" value="Guest" />
+        <div class="menu-profile-row">
+          <span class="menu-profile-item">Player ID: <strong id="menuPlayerId">guest</strong></span>
+          <span class="menu-profile-item">Best: <strong id="menuBestScore">0</strong></span>
+        </div>
+      </div>
       <div class="controls">
         <p><strong>Move:</strong> WASD or Arrow Keys</p>
         <p><strong>Dash:</strong> Space (cooldown)</p>
@@ -58,12 +67,31 @@
         <p><strong>Rocket:</strong> Right Mouse Button</p>
         <p><strong>Mobile:</strong> Left joystick + right action buttons</p>
       </div>
+      <div class="leaderboard-panel">
+        <h3>Top 10</h3>
+        <p id="menuLeaderboardStatus" class="leaderboard-status">Loading leaderboard...</p>
+        <div id="menuLeaderboard" class="leaderboard-wrap"></div>
+      </div>
       <button id="playBtn" class="action-btn">Play</button>
     </div>
 
     <div id="result" class="overlay hidden">
       <h2 id="resultTitle">Match Over</h2>
       <p id="resultText">You lasted 00:00</p>
+      <div class="result-meta">
+        <p id="resultScore" class="result-statline">Score: 0</p>
+        <p id="resultBest" class="result-statline">Best: 0</p>
+        <p id="resultSaveStatus" class="result-statline">Saved locally</p>
+      </div>
+      <div class="result-panel">
+        <h3>Match Statistics</h3>
+        <div id="resultStatsTable" class="stats-table-wrap"></div>
+      </div>
+      <div class="leaderboard-panel leaderboard-panel-result">
+        <h3>Leaderboard</h3>
+        <p id="resultLeaderboardStatus" class="leaderboard-status">Loading leaderboard...</p>
+        <div id="resultLeaderboard" class="leaderboard-wrap"></div>
+      </div>
       <button id="playAgainBtn" class="action-btn">Play Again</button>
     </div>
 

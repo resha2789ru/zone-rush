@@ -14,11 +14,20 @@
 - `src/config/gameConfig.js`: match, world, zone, and zoom constants
 - `src/config/balanceConfig.js`: combat, HP, speed, and cooldown values
 - `src/config/controlsConfig.js`: keyboard mapping constants
+- `src/config/supabaseConfig.js`: optional Supabase frontend settings and timeout
 - `src/core/game.js`: orchestration for match setup, update order, and end-state checks
 - `src/core/loop.js`: animation frame loop
 - `src/core/state.js`: initial state factory
 - `src/core/input.js`: keyboard, mouse, touch, joystick, and button listeners
 - `src/core/camera.js`: camera position and zoom rules
+
+## Persistence And Services
+
+- `src/services/supabaseClient.js`: safe browser client bootstrap with timeout wrapper
+- `src/persistence/saveAdapter.js`: unified save entrypoint
+- `src/persistence/localSaveAdapter.js`: localStorage-backed guest profile and local fallback
+- `src/persistence/supabaseSaveAdapter.js`: Supabase-backed save and leaderboard adapter
+- `src/persistence/playerProfile.js`: guest id, nickname, and aggregate profile helpers
 
 ## Entities
 
@@ -36,6 +45,9 @@
 - `src/systems/botSystem.js`: nearest-target lookup and bot movement
 - `src/systems/audioSystem.js`: synthesized sound generation
 - `src/systems/mobileSystem.js`: responsive canvas sizing, pinch zoom, joystick helpers
+- `src/systems/scoreSystem.js`: deterministic end-of-match score formula
+- `src/systems/statsSystem.js`: per-player and per-bot match statistics tracking
+- `src/systems/leaderboardSystem.js`: asynchronous leaderboard refresh flow
 
 ## Rendering
 
@@ -49,6 +61,7 @@
 
 - `src/ui/menu.js`: menu visibility
 - `src/ui/hud.js`: HUD visibility, timer, and cooldown text
+- `src/ui/leaderboard.js`: leaderboard and statistics table rendering
 - `src/ui/resultScreen.js`: result overlay state and text
 - `src/ui/mobileControls.js`: mobile-control visibility
 
@@ -59,3 +72,6 @@
 - `tools/mobile-check.js`: Playwright mobile layout check
 - `test-artifacts/screenshots/`: captured screenshots and mobile reports
 - `docs/`: project documentation for future contributors
+- `docs/SUPABASE_SETUP.md`: frontend Supabase configuration notes
+- `docs/SAVE_SYSTEM.md`: local fallback and save flow
+- `docs/MATCH_STATS.md`: tracked stats and score details

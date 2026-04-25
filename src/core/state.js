@@ -33,6 +33,16 @@ export function createGameState(canvas) {
     rightMouseDown: false,
     resultReason: 'lose',
     lastSurvived: 0,
+    matchStats: null,
+    uiState: {
+      bestScore: 0,
+      saveStatusText: '',
+      leaderboardStatus: 'Loading leaderboard...',
+      menuLeaderboard: [],
+      resultLeaderboard: [],
+      resultStatsRows: [],
+      resultPlayerSummary: null,
+    },
     keys: Object.create(null),
     isTouchDevice: detectTouchDevice(),
   };
