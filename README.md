@@ -26,12 +26,14 @@ No server setup is required for the MVP.
 - Rocket attack with jet trail and explosion splash damage
 - Rocket cooldown indicator in HUD (text + progress bar)
 - Mobile-friendly touch controls and fullscreen layout on phones
+- Tuned mobile camera zoom for a less cramped portrait view
 - Shrinking circular safe zone
 - Out-of-zone health damage
 - 8+ AI bots that move and try to stay safe
 - Bots can be eliminated by zone, traps, and collisions
 - Characters rendered as simple human figures (instead of circles)
 - Bot HP bars above each enemy
+- Synthesized sound effects for shots, dash, hits, rockets, and explosions
 - HUD with HP, players left, timer, and dash cooldown
 - Win/Lose result screen with **Play Again**
 - Match time limit: 3 minutes
