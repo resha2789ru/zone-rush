@@ -1,6 +1,7 @@
 import { GAME_CONFIG } from '../config/gameConfig.js';
 import { formatTime } from './hud.js';
 import { renderLeaderboard, renderStatsTable } from './leaderboard.js';
+import { UI_TEXT, localizeLeaderboardStatus, localizeSaveStatus } from './localization.js';
 
 // ==================================================
 // RESULT SCREEN UI
@@ -13,27 +14,27 @@ export function showResult(dom, visible) {
 
 export function updateResultScreen(game, win, reason) {
   if (win) {
-    game.dom.resultTitle.textContent = 'Victory';
-    game.dom.resultText.textContent = `You outlasted everyone in ${formatTime(game.lastSurvived)}.`;
+    game.dom.resultTitle.textContent = UI_TEXT.victory;
+    game.dom.resultText.textContent = `Ты пережил всех соперников за ${formatTime(game.lastSurvived)}.`;
   } else if (reason === 'timeout') {
-    game.dom.resultTitle.textContent = 'Time Up';
+    game.dom.resultTitle.textContent = UI_TEXT.timeUp;
     game.dom.resultText.textContent =
-      `Match ended at ${formatTime(GAME_CONFIG.matchDuration)}. Try to eliminate all bots faster.`;
+      `Матч закончился на ${formatTime(GAME_CONFIG.matchDuration)}. Попробуй уничтожить всех ботов быстрее.`;
   } else {
-    game.dom.resultTitle.textContent = 'Defeat';
-    game.dom.resultText.textContent = `You survived ${formatTime(game.lastSurvived)}.`;
+    game.dom.resultTitle.textContent = UI_TEXT.defeat;
+    game.dom.resultText.textContent = `Ты продержался ${formatTime(game.lastSurvived)}.`;
   }
 
   const playerSummary = game.uiState?.resultPlayerSummary;
   const bestScore = game.uiState?.bestScore || 0;
-  const saveStatus = game.uiState?.saveStatusText || 'Saved locally';
-  const leaderboardStatus = game.uiState?.leaderboardStatus || 'Top 10 leaderboard';
+  const saveStatus = localizeSaveStatus(game.uiState?.saveStatusText || UI_TEXT.savedLocally);
+  const leaderboardStatus = localizeLeaderboardStatus(game.uiState?.leaderboardStatus || UI_TEXT.top10Leaderboard);
 
   if (game.dom.resultScore) {
-    game.dom.resultScore.textContent = `Score: ${playerSummary?.score || 0}`;
+    game.dom.resultScore.textContent = `${UI_TEXT.score}: ${playerSummary?.score || 0}`;
   }
   if (game.dom.resultBest) {
-    game.dom.resultBest.textContent = `Best: ${bestScore}`;
+    game.dom.resultBest.textContent = `${UI_TEXT.best}: ${bestScore}`;
   }
   if (game.dom.resultSaveStatus) {
     game.dom.resultSaveStatus.textContent = saveStatus;
@@ -46,6 +47,6 @@ export function updateResultScreen(game, win, reason) {
   renderLeaderboard(
     game.dom.resultLeaderboard,
     game.uiState?.resultLeaderboard || [],
-    game.uiState?.leaderboardStatus || 'Leaderboard unavailable'
+    game.uiState?.leaderboardStatus || UI_TEXT.leaderboardUnavailable
   );
 }
