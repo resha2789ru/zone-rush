@@ -65,8 +65,8 @@
 
   const TRAP_COUNT = 6;
   const TRAP_RADIUS = 28;
-  const MIN_USER_ZOOM = 0.78;
-  const MAX_USER_ZOOM = 1.45;
+  const MIN_USER_ZOOM = 0.45;
+  const MAX_USER_ZOOM = 2.4;
 
   const keys = Object.create(null);
   const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
@@ -597,7 +597,7 @@
 
     updateResponsiveUi() {
       mobileControls.classList.toggle('active', isTouchDevice);
-      this.baseZoom = isTouchDevice && canvas.height > canvas.width ? 0.96 : 1;
+      this.baseZoom = isTouchDevice && canvas.height > canvas.width ? 0.72 : 1;
       this.applyCameraZoom();
     }
 
